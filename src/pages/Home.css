@@ -160,3 +160,17 @@
   font-weight: 600;
   margin-right: 0.5rem;
 }
+
+.feature-card-fidelite {
+  padding: 0;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+}
+
+.fidelite-visuel {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}

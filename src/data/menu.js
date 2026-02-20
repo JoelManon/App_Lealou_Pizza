@@ -26,6 +26,23 @@ function slug(name) {
     .replace(/(^-|-$)/g, '')
 }
 
+// Images par pizza (fichiers dans public/pizzas/)
+const pizzaImages = {
+  marguerite: '/pizzas/pizza-marguerite.png',
+  chorizo: '/pizzas/pizza-chorizo.png',
+  forestiere: '/pizzas/pizza-forestiere.png',
+  hawai: '/pizzas/pizza-hawai.png',
+  reine: '/pizzas/pizza-reine.png',
+  saumon: '/pizzas/pizza-saumon.png',
+  tartiflette: '/pizzas/pizza-tartiflette.png',
+  poulet: '/pizzas/pizza-poulet.png',
+  vegetarienne: '/pizzas/pizza-vegetarienne.png',
+  'chevre-miel': '/pizzas/pizza-chevre-miel.png',
+  '4-fromages': '/pizzas/pizza-4-fromages.png',
+}
+
+const defaultPizzaImage = 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&q=80'
+
 export const menuItems = [
   { name: 'Marguerite', category: 'base-tomate', price: 8, ingredients: 'Mozzarella' },
   { name: 'Marguerite Napolitaine', category: 'base-tomate', price: 11, ingredients: "Mozzarella, basilic, tomates cerises, huile d'olive" },
@@ -59,11 +76,13 @@ export const menuItems = [
   { name: 'Saint Marcellin', category: 'base-creme', price: 12, ingredients: 'Mozzarella, saint marcellin, noix' },
   { name: 'La Truffee', category: 'base-creme', price: 14, ingredients: 'Mozzarella, champignons, poudre de truffe, burrata, balsamique' },
   { name: 'Tartiflette', category: 'base-creme', price: 13, ingredients: 'Mozzarella, pommes de terre, oignons, lardons, reblochon' },
-].map((item, i) => ({
-  ...item,
-  id: slug(item.name) || `pizza-${i}`,
-  description: item.ingredients,
-  sizes: { default: item.price },
-  // Placeholder - remplacer par vos images
-  image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&q=80',
-}))
+].map((item, i) => {
+  const id = slug(item.name) || `pizza-${i}`
+  return {
+    ...item,
+    id,
+    description: item.ingredients,
+    sizes: { default: item.price },
+    image: pizzaImages[id] || defaultPizzaImage,
+  }
+})

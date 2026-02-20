@@ -82,7 +82,7 @@ export default function Fidelity() {
                 </div>
                 {qrDataUrl() && (
                   <div class="qr-show-section">
-                    <p class="qr-label">Montrez ce QR pour faire tamponner ou valider la pizza offerte</p>
+                    <p class="qr-label">QR code unique avec flash simple — un seul flash à chaque fois</p>
                     <img src={qrDataUrl()} alt="QR fidélité" class="qr-image" />
                   </div>
                 )}
@@ -103,8 +103,7 @@ export default function Fidelity() {
                     classList={{ stamp: true, 'stamp-gratuit': true, filled: hasGratuit }}
                     title={hasGratuit ? 'Pizza offerte à réclamer' : 'Gratuit (après 10 tampons)'}
                   >
-                    {hasGratuit ? '🎉' : ''}
-                    <span class="stamp-label">Gratuit</span>
+                    <img src="/stamp-gratuit.png" alt="Gratuit" class="stamp-gratuit-img" />
                   </div>
                 </div>
                 <p class="card-footer">
