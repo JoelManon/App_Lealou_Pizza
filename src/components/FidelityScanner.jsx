@@ -1,5 +1,4 @@
 import { createSignal, onMount, onCleanup } from 'solid-js'
-import { Html5Qrcode } from 'html5-qrcode'
 import './FidelityScanner.css'
 
 const LEALOU_PREFIX = 'LEALOU:'
@@ -9,10 +8,11 @@ export default function FidelityScanner() {
   const [message, setMessage] = createSignal('')
   const [scanner, setScanner] = createSignal(null)
 
-  onMount(() => {
+  onMount(async () => {
     const el = document.getElementById('qr-reader')
-    if (!el) return
+    if (!el || typeof document === 'undefined') return
 
+    const { Html5Qrcode } = await import('html5-qrcode')
     const html5Qr = new Html5Qrcode('qr-reader')
     setScanner(html5Qr)
 
