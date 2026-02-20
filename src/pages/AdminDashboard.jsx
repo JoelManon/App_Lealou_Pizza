@@ -2,6 +2,7 @@ import { createSignal, onMount } from 'solid-js'
 import { A, useNavigate } from '@solidjs/router'
 import { logout } from '../store/auth'
 import { menuItems } from '../data/menu'
+import FidelityScanner from '../components/FidelityScanner'
 import './AdminDashboard.css'
 
 export default function AdminDashboard() {
@@ -42,6 +43,7 @@ export default function AdminDashboard() {
       </header>
 
       <main class="admin-main container">
+        <FidelityScanner />
         <section class="admin-section">
           <h2>Vue d'ensemble</h2>
           <div class="stats-grid">
@@ -63,7 +65,7 @@ export default function AdminDashboard() {
         <section class="admin-section">
           <h2>Actions rapides</h2>
           <div class="quick-actions">
-            <A href="/menu" class="action-card">
+            <A href="/" class="action-card">
               <span class="action-icon">📋</span>
               <span>Voir le menu</span>
             </A>

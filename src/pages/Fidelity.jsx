@@ -1,6 +1,7 @@
-import { createSignal } from 'solid-js'
+import { createSignal, createEffect } from 'solid-js'
 import { Show } from 'solid-js'
 import { A } from '@solidjs/router'
+import QRCode from 'qrcode'
 import './Fidelity.css'
 
 export default function Fidelity() {
@@ -8,6 +9,17 @@ export default function Fidelity() {
   const [data, setData] = createSignal(null)
   const [loading, setLoading] = createSignal(false)
   const [error, setError] = createSignal('')
+  const [qrDataUrl, setQrDataUrl] = createSignal('')
+
+  createEffect(() => {
+    const d = data()
+    const p = phone().trim().replace(/\s/g, '')
+    if (d && p) {
+      QRCode.toDataURL(`LEALOU:${p}`).then(setQrDataUrl).catch(() => setQrDataUrl(''))
+    } else {
+      setQrDataUrl('')
+    }
+  })
 
   const fetchCard = async (e) => {
     e?.preventDefault()
@@ -18,7 +30,7 @@ export default function Fidelity() {
     }
     setLoading(true)
     setError('')
-    setStamps(null)
+    setData(null)
     try {
       const res = await fetch(`/api/fidelity?phone=${encodeURIComponent(p)}`)
       const apiData = await res.json()
@@ -36,7 +48,7 @@ export default function Fidelity() {
       <div class="container fidelity-container">
         <h1 class="page-title">Ma carte de fidélité</h1>
         <p class="fidelity-intro">
-          Consultez vos tampons ! 1 pizza achetée = 1 tampon. 10 tampons = 1 pizza offerte.
+          Consultez vos tampons ! 1 pizza achetée = 1 tampon. 10 tampons + le 11ᵉ Gratuit = 1 pizza offerte.
         </p>
 
         <form class="fidelity-form" onSubmit={fetchCard}>
@@ -59,35 +71,46 @@ export default function Fidelity() {
           {(() => {
             const d = data()
             const stampsVal = d.stamps
-            const total = d.stampsPerPizza || 10
-            const currentCard = stampsVal % total
-            const filled = Math.min(currentCard, total)
+            const stampsToEarn = d.stampsPerPizza || 10
+            const filledNormal = Math.min(stampsVal, stampsToEarn)
+            const hasGratuit = stampsVal >= stampsToEarn
             return (
               <div class="fidelity-card">
                 <div class="card-header">
                   <img src="/logo-lealou.png" alt="Lealou" class="card-logo" />
                   <h2>Carte de fidélité Lealou</h2>
                 </div>
+                {qrDataUrl() && (
+                  <div class="qr-show-section">
+                    <p class="qr-label">Montrez ce QR pour faire tamponner ou valider la pizza offerte</p>
+                    <img src={qrDataUrl()} alt="QR fidélité" class="qr-image" />
+                  </div>
+                )}
                 <p class="stamps-count">
-                  <strong>{filled}</strong> tampon{filled > 1 ? 's' : ''} sur {total}
-                  {stampsVal >= total && (
-                    <span class="bonus"> (+{Math.floor(stampsVal / total)} pizza(s) offerte(s) à réclamer)</span>
-                  )}
+                  <strong>{filledNormal}</strong> tampon{filledNormal > 1 ? 's' : ''} sur {stampsToEarn}
+                  {hasGratuit && <span class="bonus"> + Gratuit ✓</span>}
                 </p>
-                <div class="stamps-grid">
-                  {Array.from({ length: total }, (_, i) => (
+                <div class="stamps-grid stamps-grid-11">
+                  {Array.from({ length: stampsToEarn }, (_, i) => (
                     <div
-                      classList={{ stamp: true, filled: i < filled }}
-                      title={i < filled ? 'Tampon obtenu' : 'À gagner'}
+                      classList={{ stamp: true, filled: i < filledNormal }}
+                      title={i < filledNormal ? 'Tampon obtenu' : 'À gagner'}
                     >
-                      {i < filled ? '🍕' : ''}
+                      {i < filledNormal ? '🍕' : ''}
                     </div>
                   ))}
+                  <div
+                    classList={{ stamp: true, 'stamp-gratuit': true, filled: hasGratuit }}
+                    title={hasGratuit ? 'Pizza offerte à réclamer' : 'Gratuit (après 10 tampons)'}
+                  >
+                    {hasGratuit ? '🎉' : ''}
+                    <span class="stamp-label">Gratuit</span>
+                  </div>
                 </div>
                 <p class="card-footer">
-                  {filled >= total
-                    ? "🎉 Vous avez droit à une pizza offerte ! Présentez cette carte en caisse."
-                    : `${total - filled} tampon${total - filled > 1 ? 's' : ''} restant${total - filled > 1 ? 's' : ''} pour une pizza offerte.`}
+                  {hasGratuit
+                    ? "🎉 Vous avez droit à une pizza offerte ! Montrez ce QR en caisse pour la valider."
+                    : `${stampsToEarn - filledNormal} tampon${stampsToEarn - filledNormal > 1 ? 's' : ''} restant${stampsToEarn - filledNormal > 1 ? 's' : ''} pour débloquer le Gratuit.`}
                 </p>
               </div>
             )

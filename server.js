@@ -110,6 +110,23 @@ app.delete('/api/clients/:phone', (req, res) => {
   }
 })
 
+app.post('/api/fidelity/stamp', (req, res) => {
+  try {
+    const { phone } = req.body
+    if (!phone) return res.status(400).json({ error: 'phone required' })
+    const current = getStamps(phone)
+    if (current >= STAMPS_PER_PIZZA) {
+      const result = redeemPizza(phone)
+      res.json({ ok: true, stamps: result.stamps, redeemed: true })
+    } else {
+      const newTotal = addStamps(phone, 1)
+      res.json({ ok: true, stamps: newTotal, redeemed: false })
+    }
+  } catch (e) {
+    res.status(400).json({ error: e.message })
+  }
+})
+
 app.post('/api/fidelity/transfer', (req, res) => {
   try {
     const { phone, stamps } = req.body
