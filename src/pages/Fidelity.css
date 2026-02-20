@@ -1,0 +1,117 @@
+.fidelity-page {
+  padding: 2rem 0 4rem;
+}
+
+.fidelity-container {
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.fidelity-intro {
+  text-align: center;
+  color: #666;
+  margin-bottom: 2rem;
+  font-size: 0.95rem;
+}
+
+.fidelity-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.fidelity-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-weight: 500;
+}
+
+.fidelity-form input {
+  padding: 0.75rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: var(--radius-sm);
+}
+.fidelity-form input:focus {
+  outline: none;
+  border-color: var(--color-ripe);
+}
+
+.fidelity-error {
+  color: var(--color-ripe);
+  margin: 0;
+}
+
+.fidelity-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-hover);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border: 2px solid var(--color-wood);
+}
+
+.card-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.card-logo {
+  height: 48px;
+  width: auto;
+  margin-bottom: 0.5rem;
+}
+
+.card-header h2 {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.stamps-count .bonus {
+  font-size: 0.85em;
+  color: var(--color-ripe);
+}
+
+.stamps-count {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+}
+
+.stamps-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.stamp {
+  aspect-ratio: 1;
+  border: 2px dashed #ccc;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  background: var(--color-cream);
+  transition: all var(--transition);
+}
+
+.stamp.filled {
+  border-style: solid;
+  border-color: var(--color-ripe);
+  background: rgba(196, 61, 46, 0.1);
+}
+
+.card-footer {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #555;
+  margin: 0;
+}
+
+.fidelity-link {
+  display: block;
+  text-align: center;
+}

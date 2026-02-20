@@ -1,0 +1,75 @@
+.order-page {
+  padding: 2rem 0 4rem;
+}
+
+.order-form {
+  max-width: 500px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.order-summary {
+  background: white;
+  padding: 1.5rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+
+.order-summary h3 {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+}
+
+.order-line {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.4rem 0;
+  font-size: 0.95rem;
+}
+
+.order-total {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+  font-size: 1.15rem;
+}
+
+.order-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.order-fields label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-weight: 500;
+}
+
+.order-fields input,
+.order-fields textarea {
+  padding: 0.75rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: var(--radius-sm);
+}
+.order-fields input:focus,
+.order-fields textarea:focus {
+  outline: none;
+  border-color: var(--color-ripe);
+}
+
+.order-error {
+  color: var(--color-ripe);
+  margin: 0;
+}
+
+.btn-submit {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.1rem;
+}

@@ -1,0 +1,162 @@
+.home {
+  padding-bottom: 3rem;
+}
+
+.hero {
+  background: linear-gradient(135deg, var(--color-wood) 0%, var(--color-ripe-dark) 100%);
+  color: var(--color-cream);
+  padding: 4rem 0 5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-decoration {
+  position: absolute;
+  bottom: -20px;
+  right: 10%;
+  font-size: 8rem;
+  opacity: 0.15;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-title {
+  font-size: clamp(1.75rem, 5vw, 2.75rem);
+  margin: 0 0 1rem;
+  line-height: 1.2;
+}
+.hero-title span {
+  color: var(--color-gold);
+}
+
+.hero-subtitle {
+  font-size: 1.1rem;
+  max-width: 500px;
+  margin: 0 auto 2rem;
+  opacity: 0.95;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: 1rem;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn-primary {
+  background: var(--color-gold);
+  color: var(--color-wood);
+}
+.btn-primary:hover {
+  box-shadow: 0 6px 24px rgba(212, 168, 83, 0.4);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--color-cream);
+  border: 2px solid var(--color-cream);
+}
+.btn-outline:hover {
+  background: rgba(255, 248, 240, 0.1);
+}
+
+/* Features */
+.features {
+  padding: 4rem 0;
+}
+
+.features h2 {
+  text-align: center;
+  font-size: 1.75rem;
+  margin-bottom: 2rem;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+
+.feature-card {
+  background: white;
+  padding: 2rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  text-align: center;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+}
+
+.feature-icon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.feature-card h3 {
+  font-size: 1.15rem;
+  margin: 0 0 0.5rem;
+}
+
+.feature-card p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #666;
+}
+
+.feature-card-schedule {
+  background: white;
+  color: var(--color-wood);
+  text-align: left;
+}
+
+.feature-card-schedule .schedule-phone {
+  display: block;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-ripe);
+  margin-bottom: 1rem;
+  text-decoration: none;
+}
+.feature-card-schedule .schedule-phone:hover {
+  color: var(--color-ripe-dark);
+}
+
+.schedule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.schedule-list p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--color-wood);
+}
+
+.schedule-list .day {
+  color: var(--color-ripe);
+  font-weight: 600;
+  margin-right: 0.5rem;
+}

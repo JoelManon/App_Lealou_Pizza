@@ -1,0 +1,16 @@
+.contact-page {
+  padding: 2rem 0 4rem;
+}
+
+.contact-card {
+  max-width: 400px;
+  margin: 0 auto;
+  background: white;
+  padding: 2rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+
+.contact-card p {
+  margin: 0.5rem 0;
+}

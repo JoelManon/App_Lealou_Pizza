@@ -1,0 +1,215 @@
+.admin-clients .admin-header {
+  background: var(--color-wood);
+  color: var(--color-cream);
+  padding: 1rem 0;
+}
+
+.admin-clients .admin-header a {
+  color: var(--color-cream-dark);
+}
+.admin-clients .admin-header a:hover {
+  color: var(--color-gold);
+}
+
+.admin-clients-main {
+  padding: 2rem 0;
+}
+
+.clients-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.search-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.search-row input {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: var(--radius-sm);
+  min-width: 220px;
+}
+
+.search-row button,
+.btn-add-client {
+  padding: 0.5rem 1rem;
+  background: var(--color-ripe);
+  color: white;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+}
+
+.btn-add-client {
+  background: var(--color-herb);
+}
+
+.clients-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.client-card {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 1rem;
+  align-items: center;
+  background: white;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+
+@media (max-width: 768px) {
+  .client-card {
+    grid-template-columns: 1fr;
+  }
+}
+
+.client-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.client-phone {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.client-address {
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.client-fidelity {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.stamps-badge {
+  background: rgba(196, 61, 46, 0.1);
+  color: var(--color-ripe);
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: 0.9rem;
+}
+
+.fidelity-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-small {
+  padding: 0.35rem 0.6rem;
+  font-size: 0.8rem;
+  background: var(--color-cream-dark);
+  border-radius: var(--radius-sm);
+}
+.btn-small:hover {
+  background: #e8dccf;
+}
+
+.client-actions button {
+  padding: 0.4rem 0.8rem;
+  background: var(--color-wood);
+  color: white;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+}
+
+.empty {
+  text-align: center;
+  color: #666;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal {
+  background: white;
+  padding: 1.5rem;
+  border-radius: var(--radius-md);
+  max-width: 400px;
+  width: 100%;
+  box-shadow: var(--shadow-hover);
+}
+
+.modal h3 {
+  margin: 0 0 1rem;
+}
+
+.modal label {
+  display: block;
+  margin-top: 0.75rem;
+  font-weight: 500;
+}
+
+.modal input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: var(--radius-sm);
+  margin-top: 0.25rem;
+}
+
+.hint {
+  font-size: 0.8rem;
+  color: #888;
+  margin: 0.25rem 0 0;
+}
+
+.form-error {
+  color: var(--color-ripe);
+  font-size: 0.9rem;
+  margin: 0.75rem 0 0;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  justify-content: flex-end;
+}
+
+.modal-actions .btn-primary {
+  background: var(--color-ripe);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+}
+
+.modal-transfer .transfer-desc {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0.75rem 0;
+}
+
+.transfer-input {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.transfer-input input {
+  width: 80px;
+  text-align: center;
+}
