@@ -11,8 +11,7 @@ export default function Home() {
           </h1>
           <p class="hero-subtitle">
             Des pizzas artisanales cuites au feu de bois, des ingrédients frais
-            et une touche d'Italie à chaque bouchée. QR code unique avec flash
-            simple — un seul flash à chaque fois.
+            et une touche d'Italie à chaque bouchée.
           </p>
           <div class="hero-actions">
             <A href="/menu" class="btn btn-primary">
@@ -46,8 +45,8 @@ export default function Home() {
               <h3>Produits frais</h3>
               <p>Des ingrédients sélectionnés chaque jour pour des saveurs authentiques.</p>
             </div>
-            <A href="/fidelite" class="feature-card feature-card-fidelite">
-              <img src="/carte-fidelite-visuel.png" alt="Carte de fidélité Lealou — 10 pizzas achetées, la 11ème gratuite" class="fidelite-visuel" />
+            <A href="/fidelite" class="feature-card feature-card-fidelity">
+              <img src="/carte-fidelite-visuel.png" alt="Carte de fidélité Lealou - 10 pizzas achetées, la 11ème gratuite" />
             </A>
           </div>
         </div>

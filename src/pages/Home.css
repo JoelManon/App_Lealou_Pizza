@@ -161,16 +161,15 @@
   margin-right: 0.5rem;
 }
 
-.feature-card-fidelite {
+.feature-card-fidelity {
   padding: 0;
   overflow: hidden;
   text-decoration: none;
-  color: inherit;
 }
 
-.fidelite-visuel {
+.feature-card-fidelity img {
+  display: block;
   width: 100%;
   height: auto;
-  display: block;
   object-fit: contain;
 }

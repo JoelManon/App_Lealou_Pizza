@@ -24,10 +24,46 @@ app.get('/health', (req, res) => res.status(200).json({ ok: true, service: 'leal
 const { createOrder, getOrders, updateOrderStatus } = await import('./api/orders.js')
 const { getStamps, redeemPizza, addStamps, transferFromPaper, setStamps, STAMPS_PER_PIZZA } = await import('./api/fidelity.js')
 const { listClients, getClient, createClient, updateClient, deleteClient } = await import('./api/clients.js')
+const { listMenuItems, createMenuItem, updateMenuItem, deleteMenuItem, seedMenuFromStatic } = await import('./api/menu.js')
+const { categories, supplements, menuMeta, rawItemsForSeed } = await import('./api/menuData.js')
 
-app.get('/api/menu', async (req, res) => {
-  const { menuItems, categories, supplements, menuMeta } = await import('./api/menuData.js')
-  res.json({ menuItems, categories, supplements, menuMeta })
+// Seed menu si vide
+try { seedMenuFromStatic(rawItemsForSeed) } catch (_) {}
+
+app.get('/api/menu', (req, res) => {
+  try {
+    const menuItems = listMenuItems()
+    res.json({ menuItems, categories, supplements, menuMeta })
+  } catch (e) {
+    res.status(500).json({ error: e.message })
+  }
+})
+
+app.post('/api/menu', (req, res) => {
+  try {
+    const item = createMenuItem(req.body)
+    res.status(201).json(item)
+  } catch (e) {
+    res.status(400).json({ error: e.message })
+  }
+})
+
+app.patch('/api/menu/:id', (req, res) => {
+  try {
+    const item = updateMenuItem(Number(req.params.id), req.body)
+    res.json(item)
+  } catch (e) {
+    res.status(400).json({ error: e.message })
+  }
+})
+
+app.delete('/api/menu/:id', (req, res) => {
+  try {
+    deleteMenuItem(Number(req.params.id))
+    res.json({ ok: true })
+  } catch (e) {
+    res.status(400).json({ error: e.message })
+  }
 })
 
 app.get('/api/orders', (req, res) => {
@@ -107,23 +143,6 @@ app.delete('/api/clients/:phone', (req, res) => {
     res.json({ ok: true })
   } catch (e) {
     res.status(500).json({ error: e.message })
-  }
-})
-
-app.post('/api/fidelity/stamp', (req, res) => {
-  try {
-    const { phone } = req.body
-    if (!phone) return res.status(400).json({ error: 'phone required' })
-    const current = getStamps(phone)
-    if (current >= STAMPS_PER_PIZZA) {
-      const result = redeemPizza(phone)
-      res.json({ ok: true, stamps: result.stamps, redeemed: true })
-    } else {
-      const newTotal = addStamps(phone, 1)
-      res.json({ ok: true, stamps: newTotal, redeemed: false })
-    }
-  } catch (e) {
-    res.status(400).json({ error: e.message })
   }
 })
 

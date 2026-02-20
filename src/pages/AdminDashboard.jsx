@@ -1,23 +1,23 @@
 import { createSignal, onMount } from 'solid-js'
 import { A, useNavigate } from '@solidjs/router'
 import { logout } from '../store/auth'
-import { menuItems } from '../data/menu'
-import FidelityScanner from '../components/FidelityScanner'
 import './AdminDashboard.css'
 
 export default function AdminDashboard() {
   const navigate = useNavigate()
-  const [stats, setStats] = createSignal({ total: 0, pending: 0 })
+  const [stats, setStats] = createSignal({ total: 0, pending: 0, menuCount: 0 })
 
   onMount(async () => {
     try {
-      const [all, pending] = await Promise.all([
+      const [menuRes, all, pending] = await Promise.all([
+        fetch('/api/menu').then(r => r.json()),
         fetch('/api/orders').then(r => r.json()),
         fetch('/api/orders?status=pending').then(r => r.json()),
       ])
       const today = new Date().toDateString()
       const todayCount = all.filter(o => new Date(o.created_at).toDateString() === today).length
-      setStats({ total: todayCount, pending: pending.length })
+      const menuCount = (menuRes.menuItems || []).length
+      setStats({ total: todayCount, pending: pending.length, menuCount })
     } catch (e) {
       console.error(e)
     }
@@ -43,12 +43,11 @@ export default function AdminDashboard() {
       </header>
 
       <main class="admin-main container">
-        <FidelityScanner />
         <section class="admin-section">
           <h2>Vue d'ensemble</h2>
           <div class="stats-grid">
             <div class="stat-card">
-              <span class="stat-value">{menuItems.length}</span>
+              <span class="stat-value">{stats().menuCount}</span>
               <span class="stat-label">Articles au menu</span>
             </div>
             <div class="stat-card">
@@ -65,9 +64,9 @@ export default function AdminDashboard() {
         <section class="admin-section">
           <h2>Actions rapides</h2>
           <div class="quick-actions">
-            <A href="/" class="action-card">
+            <A href="/admin/menu" class="action-card">
               <span class="action-icon">📋</span>
-              <span>Voir le menu</span>
+              <span>Gestion carte menu</span>
             </A>
             <A href="/admin/orders" class="action-card">
               <span class="action-icon">📦</span>

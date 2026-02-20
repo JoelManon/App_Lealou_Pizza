@@ -13,6 +13,7 @@ import AdminLogin from './pages/AdminLogin'
 import AdminDashboard from './pages/AdminDashboard'
 import AdminOrders from './pages/AdminOrders'
 import AdminClients from './pages/AdminClients'
+import AdminMenu from './pages/AdminMenu'
 import AdminGuard from './components/AdminGuard'
 
 function RootLayout(props) {
@@ -49,6 +50,7 @@ function App(appProps) {
         <Route path="/" component={AdminDashboard} />
         <Route path="/orders" component={AdminOrders} />
         <Route path="/clients" component={AdminClients} />
+        <Route path="/menu" component={AdminMenu} />
       </Route>
     </Router>
   )

@@ -1,15 +1,38 @@
-import { createSignal } from 'solid-js'
-import { menuItems, categories, supplements, menuMeta } from '../data/menu'
+import { createSignal, onMount } from 'solid-js'
 import { addToCart } from '../store/cart'
 import './Menu.css'
 
+const FALLBACK = {
+  menuItems: [],
+  categories: [{ id: 'base-tomate', name: 'Base tomate', icon: '🍅' }, { id: 'base-creme', name: 'Base crème', icon: '🥛' }],
+  supplements: [],
+  menuMeta: { note: '', basePriceText: '' },
+}
+
 export default function Menu() {
   const [selectedCategory, setSelectedCategory] = createSignal('all')
+  const [menuData, setMenuData] = createSignal(null)
+
+  onMount(async () => {
+    try {
+      const res = await fetch('/api/menu')
+      const data = await res.json()
+      setMenuData(data)
+    } catch (e) {
+      setMenuData(FALLBACK)
+    }
+  })
+
+  const menuItems = () => menuData()?.menuItems ?? []
+  const categories = () => menuData()?.categories ?? FALLBACK.categories
+  const supplements = () => menuData()?.supplements ?? FALLBACK.supplements
+  const menuMeta = () => menuData()?.menuMeta ?? FALLBACK.menuMeta
 
   const filteredItems = () => {
     const cat = selectedCategory()
-    if (cat === 'all') return menuItems
-    return menuItems.filter(i => i.category === cat)
+    const items = menuItems()
+    if (cat === 'all') return items
+    return items.filter(i => i.category === cat)
   }
 
   const handleAdd = (item, size = 'default', qty = 1) => {
@@ -25,8 +48,13 @@ export default function Menu() {
   return (
     <div class="menu-page">
       <div class="container">
+        <p class="menu-disclaimer">Images Non Contractuelles</p>
         <h1 class="page-title">Notre Menu</h1>
 
+        {!menuData() ? (
+          <p class="menu-loading">Chargement du menu...</p>
+        ) : (
+        <>
         <div class="category-tabs">
           <button
             classList={{ active: selectedCategory() === 'all' }}
@@ -34,7 +62,7 @@ export default function Menu() {
           >
             Tout
           </button>
-          {categories.map(cat => (
+          {categories().map(cat => (
             <button
               classList={{ active: selectedCategory() === cat.id }}
               onClick={() => setSelectedCategory(cat.id)}
@@ -85,15 +113,17 @@ export default function Menu() {
         </div>
 
         <div class="menu-meta">
-          <p class="meta-note">{menuMeta.note}</p>
-          <p class="meta-calzone">{menuMeta.basePriceText}</p>
+          <p class="meta-note">{menuMeta().note}</p>
+          <p class="meta-calzone">{menuMeta().basePriceText}</p>
           <div class="supplements">
             <h4>Suppléments</h4>
-            {supplements.map(s => (
+            {supplements().map(s => (
               <p key={s}>{s}</p>
             ))}
           </div>
         </div>
+        </>
+        )}
       </div>
     </div>
   )

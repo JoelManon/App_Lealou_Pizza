@@ -27,6 +27,19 @@ db.exec(`
 `)
 
 db.exec(`
+  CREATE TABLE IF NOT EXISTS menu_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    category TEXT NOT NULL,
+    price REAL NOT NULL,
+    ingredients TEXT NOT NULL,
+    image TEXT DEFAULT '/pizzas/pizza-marguerite.png',
+    sort_order INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )
+`)
+
+db.exec(`
   CREATE TABLE IF NOT EXISTS orders (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     customer_name TEXT NOT NULL,
