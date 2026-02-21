@@ -2,6 +2,49 @@ import db from './db.js'
 import { listMenuItems, seedMenuFromStatic } from './menu.js'
 import { rawItemsForSeed, categories, supplements, menuMeta } from './menuData.js'
 
+const PIZZA_IMAGE_BY_NAME = {
+  'marguerite': '/pizzas/pizza-marguerite.png',
+  'marguerite napolitaine': '/pizzas/pizza-marguerite-napolitaine.png',
+  'forestiere': '/pizzas/pizza-forestiere.png',
+  'poulet': '/pizzas/pizza-poulet.png',
+  'reine': '/pizzas/pizza-reine.png',
+  'napolitaine': '/pizzas/pizza-napolitaine.png',
+  '4 fromages': '/pizzas/pizza-4-fromages.png',
+  'la bella napoli': '/pizzas/pizza-la-bella-napoli.png',
+  'burger': '/pizzas/pizza-burger.png',
+  'bolognaise': '/pizzas/pizza-bolognaise.png',
+  'bolognaise +': '/pizzas/pizza-bolognaise +.png',
+  'chorizo': '/pizzas/pizza-chorizo.png',
+  '4 saisons': '/pizzas/pizza-4-saisons.png',
+  'orientale': '/pizzas/pizza-chorizo.png',
+  'orientale +': '/pizzas/pizza-chorizo.png',
+  'kebab': '/pizzas/pizza-kebab.png',
+  'kebab +': '/pizzas/pizza-kebab +.png',
+  'la kevin': '/pizzas/pizza-la-kevin.png',
+  'hawai': '/pizzas/pizza-hawai.png',
+  'la colisee': '/pizzas/pizza-la-colisée.png',
+  'vegetarienne +': '/pizzas/pizza-vegetarienne +.png',
+  'la savoyarde': '/pizzas/pizza-la-savoyarde.png',
+  'poulet curry': '/pizzas/pizza-poulet-curry.png',
+  'chevre miel': '/pizzas/pizza-chevre-miel.png',
+  '6 fromages': '/pizzas/pizza-6-fromages.png',
+  'raviole': '/pizzas/pizza-raviole.png',
+  'saumon': '/pizzas/pizza-saumon.png',
+  'rome': '/pizzas/pizza-rome.png',
+  'la regionale': '/pizzas/pizza-regionale.png',
+  'saint marcellin': '/pizzas/pizza-saint-marcellin.png',
+  'la truffee': '/pizzas/pizza-la-truffee.png',
+  'tartiflette': '/pizzas/pizza-tartiflette.png',
+}
+
+function normalizeName(name) {
+  return String(name)
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+}
+
 export function reorderMenuItem(id, newSortOrder) {
   const existing = db.prepare('SELECT * FROM menu_items WHERE id = ?').get(id)
   if (!existing) throw new Error('Produit non trouvé')
@@ -125,6 +168,23 @@ export function toggleMenuItemAvailability(id, available) {
   
   db.prepare('UPDATE menu_items SET available = ? WHERE id = ?').run(available ? 1 : 0, id)
   return { ok: true, id, available }
+}
+
+export function fixAllImages() {
+  const rows = db.prepare('SELECT id, name FROM menu_items').all()
+  const stmt = db.prepare('UPDATE menu_items SET image = ? WHERE id = ?')
+  let updated = 0
+  
+  for (const row of rows) {
+    const normalized = normalizeName(row.name)
+    const correctImage = PIZZA_IMAGE_BY_NAME[normalized]
+    if (correctImage) {
+      stmt.run(correctImage, row.id)
+      updated++
+    }
+  }
+  
+  return { ok: true, updated }
 }
 
 export function getAvailablePizzaImages() {

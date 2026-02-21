@@ -28,11 +28,12 @@ const { listMenuItems, createMenuItem, updateMenuItem, deleteMenuItem, seedMenuF
 const { categories, supplements, menuMeta, rawItemsForSeed } = await import('./api/menuData.js')
 const { 
   reorderMenuItem, bulkReorder, resetMenuToDefault, getMenuStats, 
-  exportMenu, importMenu, duplicateMenuItem, getAvailablePizzaImages 
+  exportMenu, importMenu, duplicateMenuItem, getAvailablePizzaImages, fixAllImages 
 } = await import('./api/menuAdmin.js')
 
-// Seed menu si vide
+// Seed menu si vide et corriger les images
 try { seedMenuFromStatic(rawItemsForSeed) } catch (_) {}
+try { fixAllImages() } catch (_) {}
 
 // Routes admin menu (AVANT les routes avec :id pour éviter les conflits)
 app.get('/api/menu/admin/stats', (req, res) => {
@@ -74,6 +75,15 @@ app.post('/api/menu/admin/import', (req, res) => {
 app.post('/api/menu/admin/reset', (req, res) => {
   try {
     const result = resetMenuToDefault()
+    res.json(result)
+  } catch (e) {
+    res.status(500).json({ error: e.message })
+  }
+})
+
+app.post('/api/menu/admin/fix-images', (req, res) => {
+  try {
+    const result = fixAllImages()
     res.json(result)
   } catch (e) {
     res.status(500).json({ error: e.message })
