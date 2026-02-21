@@ -26,10 +26,70 @@ const { getStamps, redeemPizza, addStamps, transferFromPaper, setStamps, STAMPS_
 const { listClients, getClient, createClient, updateClient, deleteClient } = await import('./api/clients.js')
 const { listMenuItems, createMenuItem, updateMenuItem, deleteMenuItem, seedMenuFromStatic } = await import('./api/menu.js')
 const { categories, supplements, menuMeta, rawItemsForSeed } = await import('./api/menuData.js')
+const { 
+  reorderMenuItem, bulkReorder, resetMenuToDefault, getMenuStats, 
+  exportMenu, importMenu, duplicateMenuItem, getAvailablePizzaImages 
+} = await import('./api/menuAdmin.js')
 
 // Seed menu si vide
 try { seedMenuFromStatic(rawItemsForSeed) } catch (_) {}
 
+// Routes admin menu (AVANT les routes avec :id pour éviter les conflits)
+app.get('/api/menu/admin/stats', (req, res) => {
+  try {
+    const stats = getMenuStats()
+    res.json(stats)
+  } catch (e) {
+    res.status(500).json({ error: e.message })
+  }
+})
+
+app.get('/api/menu/admin/images', (req, res) => {
+  try {
+    const images = getAvailablePizzaImages()
+    res.json(images)
+  } catch (e) {
+    res.status(500).json({ error: e.message })
+  }
+})
+
+app.get('/api/menu/admin/export', (req, res) => {
+  try {
+    const data = exportMenu()
+    res.json(data)
+  } catch (e) {
+    res.status(500).json({ error: e.message })
+  }
+})
+
+app.post('/api/menu/admin/import', (req, res) => {
+  try {
+    const result = importMenu(req.body)
+    res.json(result)
+  } catch (e) {
+    res.status(400).json({ error: e.message })
+  }
+})
+
+app.post('/api/menu/admin/reset', (req, res) => {
+  try {
+    const result = resetMenuToDefault()
+    res.json(result)
+  } catch (e) {
+    res.status(500).json({ error: e.message })
+  }
+})
+
+app.post('/api/menu/admin/reorder', (req, res) => {
+  try {
+    const result = bulkReorder(req.body.items)
+    res.json(result)
+  } catch (e) {
+    res.status(400).json({ error: e.message })
+  }
+})
+
+// Routes menu standard
 app.get('/api/menu', (req, res) => {
   try {
     const menuItems = listMenuItems()
@@ -43,6 +103,24 @@ app.post('/api/menu', (req, res) => {
   try {
     const item = createMenuItem(req.body)
     res.status(201).json(item)
+  } catch (e) {
+    res.status(400).json({ error: e.message })
+  }
+})
+
+app.post('/api/menu/:id/duplicate', (req, res) => {
+  try {
+    const item = duplicateMenuItem(Number(req.params.id))
+    res.status(201).json(item)
+  } catch (e) {
+    res.status(400).json({ error: e.message })
+  }
+})
+
+app.patch('/api/menu/:id/reorder', (req, res) => {
+  try {
+    const result = reorderMenuItem(Number(req.params.id), req.body.sort_order)
+    res.json(result)
   } catch (e) {
     res.status(400).json({ error: e.message })
   }

@@ -8,19 +8,39 @@ const CATEGORIES = [
   { id: 'base-creme', name: 'Base crème' },
 ]
 
-const PIZZA_IMAGES = [
+const PIZZA_IMAGES_FALLBACK = [
   '/pizzas/pizza-marguerite.png',
+  '/pizzas/pizza-marguerite-napolitaine.png',
+  '/pizzas/pizza-napolitaine.png',
   '/pizzas/pizza-4-fromages.png',
+  '/pizzas/pizza-6-fromages.png',
+  '/pizzas/pizza-4-saisons.png',
   '/pizzas/pizza-reine.png',
+  '/pizzas/pizza-rome.png',
   '/pizzas/pizza-hawai.png',
   '/pizzas/pizza-chorizo.png',
   '/pizzas/pizza-forestiere.png',
   '/pizzas/pizza-poulet.png',
+  '/pizzas/pizza-poulet-curry.png',
   '/pizzas/pizza-vegetarienne.png',
+  '/pizzas/pizza-vegetarienne +.png',
   '/pizzas/pizza-chevre-miel.png',
   '/pizzas/pizza-saumon.png',
   '/pizzas/pizza-tartiflette.png',
-]
+  '/pizzas/pizza-bolognaise.png',
+  '/pizzas/pizza-bolognaise +.png',
+  '/pizzas/pizza-burger.png',
+  '/pizzas/pizza-kebab.png',
+  '/pizzas/pizza-kebab +.png',
+  '/pizzas/pizza-la-bella-napoli.png',
+  '/pizzas/pizza-la-colisée.png',
+  '/pizzas/pizza-la-kevin.png',
+  '/pizzas/pizza-la-savoyarde.png',
+  '/pizzas/pizza-la-truffee.png',
+  '/pizzas/pizza-raviole.png',
+  '/pizzas/pizza-regionale.png',
+  '/pizzas/pizza-saint-marcellin.png',
+];
 
 export default function AdminMenu() {
   const [items, setItems] = createSignal([])
@@ -36,6 +56,9 @@ export default function AdminMenu() {
   })
   const [error, setError] = createSignal('')
   const [submitting, setSubmitting] = createSignal(false)
+  const [pizzaImages, setPizzaImages] = createSignal(PIZZA_IMAGES_FALLBACK)
+  const [stats, setStats] = createSignal(null)
+  const [showStats, setShowStats] = createSignal(false)
 
   const fetchMenu = async () => {
     setLoading(true)
@@ -51,7 +74,30 @@ export default function AdminMenu() {
     }
   }
 
-  onMount(fetchMenu)
+  const fetchImages = async () => {
+    try {
+      const res = await fetch('/api/menu/admin/images')
+      const data = await res.json()
+      if (Array.isArray(data)) setPizzaImages(data)
+    } catch (e) {
+      console.error('Erreur chargement images:', e)
+    }
+  }
+
+  const fetchStats = async () => {
+    try {
+      const res = await fetch('/api/menu/admin/stats')
+      const data = await res.json()
+      setStats(data)
+    } catch (e) {
+      console.error('Erreur stats:', e)
+    }
+  }
+
+  onMount(() => {
+    fetchMenu()
+    fetchImages()
+  })
 
   const openAdd = () => {
     setEditing(null)
@@ -127,6 +173,46 @@ export default function AdminMenu() {
     }
   }
 
+  const duplicateProduct = async (item) => {
+    try {
+      await fetch(`/api/menu/${item.id}/duplicate`, { method: 'POST' })
+      fetchMenu()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  const resetMenu = async () => {
+    if (!confirm('Réinitialiser le menu aux valeurs par défaut ? Cette action est irréversible.')) return
+    try {
+      await fetch('/api/menu/admin/reset', { method: 'POST' })
+      fetchMenu()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  const exportMenu = async () => {
+    try {
+      const res = await fetch('/api/menu/admin/export')
+      const data = await res.json()
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `menu-export-${new Date().toISOString().slice(0,10)}.json`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  const openStats = () => {
+    fetchStats()
+    setShowStats(true)
+  }
+
   return (
     <div class="admin-menu">
       <header class="admin-header">
@@ -139,9 +225,12 @@ export default function AdminMenu() {
       <main class="container admin-menu-main">
         <div class="menu-toolbar">
           <p class="menu-intro">Modifier les visuels, tarifs, ingrédients. Créer ou supprimer des produits.</p>
-          <button class="btn-add-product" onClick={openAdd}>
-            + Nouveau produit
-          </button>
+          <div class="menu-toolbar-actions">
+            <button class="btn-stats" onClick={openStats}>📊 Stats</button>
+            <button class="btn-export" onClick={exportMenu}>📥 Exporter</button>
+            <button class="btn-reset" onClick={resetMenu}>🔄 Réinitialiser</button>
+            <button class="btn-add-product" onClick={openAdd}>+ Nouveau produit</button>
+          </div>
         </div>
 
         {loading() ? (
@@ -163,6 +252,7 @@ export default function AdminMenu() {
                     <p class="menu-price">{item.price}€</p>
                     <div class="menu-card-actions">
                       <button class="btn-edit" onClick={() => openEdit(item)}>Modifier</button>
+                      <button class="btn-duplicate" onClick={() => duplicateProduct(item)}>Dupliquer</button>
                       <button class="btn-delete" onClick={() => deleteProduct(item)}>Supprimer</button>
                     </div>
                   </div>
@@ -215,7 +305,7 @@ export default function AdminMenu() {
                 value={form().image}
                 onInput={e => setForm(f => ({ ...f, image: e.target.value }))}
               >
-                {PIZZA_IMAGES.map(img => (
+                {pizzaImages().map(img => (
                   <option value={img} key={img}>{img.split('/').pop()}</option>
                 ))}
               </select>
@@ -230,6 +320,42 @@ export default function AdminMenu() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      </Show>
+
+      <Show when={showStats()}>
+        <div class="modal-overlay" onClick={() => setShowStats(false)}>
+          <div class="modal modal-stats" onClick={e => e.stopPropagation()}>
+            <h3>Statistiques du menu</h3>
+            {stats() ? (
+              <div class="stats-content">
+                <div class="stat-item">
+                  <span class="stat-label">Total produits</span>
+                  <span class="stat-value">{stats().total}</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Prix moyen</span>
+                  <span class="stat-value">{stats().priceRange?.avg}€</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Prix min / max</span>
+                  <span class="stat-value">{stats().priceRange?.min}€ - {stats().priceRange?.max}€</span>
+                </div>
+                <h4>Par catégorie</h4>
+                {stats().byCategory?.map(cat => (
+                  <div class="stat-item" key={cat.category}>
+                    <span class="stat-label">{CATEGORIES.find(c => c.id === cat.category)?.name || cat.category}</span>
+                    <span class="stat-value">{cat.count} pizzas (moy. {cat.avgPrice}€)</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p>Chargement...</p>
+            )}
+            <div class="modal-actions">
+              <button onClick={() => setShowStats(false)}>Fermer</button>
+            </div>
           </div>
         </div>
       </Show>
