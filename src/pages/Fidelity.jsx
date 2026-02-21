@@ -30,7 +30,7 @@ export default function Fidelity() {
     }
     setLoading(true)
     setError('')
-    setStamps(null)
+    setData(null)
     try {
       const res = await fetch(`/api/fidelity?phone=${encodeURIComponent(p)}`)
       const apiData = await res.json()
@@ -89,10 +89,10 @@ export default function Fidelity() {
                 <div class="stamps-grid">
                   {Array.from({ length: total }, (_, i) => (
                     <div
-                      classList={{ stamp: true, filled: i < filledNormal }}
-                      title={i < filledNormal ? 'Tampon obtenu' : 'À gagner'}
+                      classList={{ stamp: true, filled: i < filled }}
+                      title={i < filled ? 'Tampon obtenu' : 'À gagner'}
                     >
-                      {i < filledNormal ? '🍕' : ''}
+                      {i < filled ? '🍕' : ''}
                     </div>
                   ))}
                 </div>
