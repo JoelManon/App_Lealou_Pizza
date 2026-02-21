@@ -1,0 +1,32 @@
+[
+  {
+    "first_name": "Jean",
+    "last_name": "Dupont",
+    "phone": "0612345678",
+    "address": "12 rue de la Pizza, 38000 Grenoble"
+  },
+  {
+    "first_name": "Marie",
+    "last_name": "Martin",
+    "phone": "0698765432",
+    "address": "5 avenue des Saveurs, 38100 La Tour-du-Pin"
+  },
+  {
+    "first_name": "Pierre",
+    "last_name": "Bernard",
+    "phone": "0632508244",
+    "address": "8 place du Marché, 38110 Saint-Jean-de-Soudain"
+  },
+  {
+    "first_name": "Sophie",
+    "last_name": "Petit",
+    "phone": "0676543210",
+    "address": "3 chemin des Bois, 38690 Corbelin"
+  },
+  {
+    "first_name": "Lucas",
+    "last_name": "Durand",
+    "phone": "0611223344",
+    "address": "15 rue Principale, 73140 Saint-Didier-d'Aoste"
+  }
+]

@@ -33,7 +33,7 @@ const PIZZA_IMAGES_FALLBACK = [
   '/pizzas/pizza-kebab.png',
   '/pizzas/pizza-kebab +.png',
   '/pizzas/pizza-la-bella-napoli.png',
-  '/pizzas/pizza-la-colisée.png',
+  '/pizzas/pizza-la-colisee.png',
   '/pizzas/pizza-la-kevin.png',
   '/pizzas/pizza-la-savoyarde.png',
   '/pizzas/pizza-la-truffee.png',

@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "node server",
+    "seed:clients": "node scripts/seed-clients.js",
     "build": "npm run build:client && npm run build:server",
     "build:client": "vite build --outDir dist/client",
     "build:server": "vite build --ssr src/entry-server.jsx --outDir dist/server",

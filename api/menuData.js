@@ -79,7 +79,7 @@ const pizzaImages = {
   'kebab-': '/pizzas/pizza-kebab +.png',
   'la-kevin': '/pizzas/pizza-la-kevin.png',
   'hawai': '/pizzas/pizza-hawai.png',
-  'la-colisee': '/pizzas/pizza-la-colisée.png',
+  'la-colisee': '/pizzas/pizza-la-colisee.png',
   'vegetarienne-': '/pizzas/pizza-vegetarienne +.png',
   'la-savoyarde': '/pizzas/pizza-la-savoyarde.png',
   'poulet-curry': '/pizzas/pizza-poulet-curry.png',
