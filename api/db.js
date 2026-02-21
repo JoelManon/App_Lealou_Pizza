@@ -35,9 +35,18 @@ db.exec(`
     ingredients TEXT NOT NULL,
     image TEXT DEFAULT '/pizzas/pizza-marguerite.png',
     sort_order INTEGER DEFAULT 0,
+    available INTEGER DEFAULT 1,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )
 `)
+
+// Migration: ajouter les colonnes manquantes si la table existe déjà
+try {
+  db.exec(`ALTER TABLE menu_items ADD COLUMN sort_order INTEGER DEFAULT 0`)
+} catch (_) {}
+try {
+  db.exec(`ALTER TABLE menu_items ADD COLUMN available INTEGER DEFAULT 1`)
+} catch (_) {}
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS orders (
