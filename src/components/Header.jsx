@@ -33,9 +33,6 @@ export default function Header() {
               <span class="cart-badge">{cartCount()}</span>
             </Show>
           </A>
-          <A href="/admin" class="nav-admin">
-            Staff
-          </A>
         </nav>
       </div>
     </header>
