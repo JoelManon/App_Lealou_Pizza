@@ -1,9 +1,14 @@
 import Database from 'better-sqlite3'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
+import { mkdirSync } from 'fs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
-const dbPath = join(__dirname, '..', 'data', 'lealou.db')
+const dataDir = join(__dirname, '..', 'data')
+const dbPath = join(dataDir, 'lealou.db')
+
+// Créer le dossier data s'il n'existe pas
+try { mkdirSync(dataDir, { recursive: true }) } catch (_) {}
 
 const db = new Database(dbPath)
 
