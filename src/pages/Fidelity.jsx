@@ -1,10 +1,11 @@
-import { createSignal, createEffect } from 'solid-js'
+import { createSignal, createEffect, onMount } from 'solid-js'
 import { Show } from 'solid-js'
-import { A } from '@solidjs/router'
+import { A, useSearchParams } from '@solidjs/router'
 import QRCode from 'qrcode'
 import './Fidelity.css'
 
 export default function Fidelity() {
+  const [searchParams, setSearchParams] = useSearchParams()
   const [phone, setPhone] = createSignal('')
   const [data, setData] = createSignal(null)
   const [loading, setLoading] = createSignal(false)
@@ -22,13 +23,14 @@ export default function Fidelity() {
     }
   })
 
-  const fetchCard = async (e) => {
+  const fetchCard = async (e, phoneOverride) => {
     e?.preventDefault()
-    const p = phone().trim()
+    const p = (phoneOverride ?? phone()).toString().trim().replace(/\s/g, '')
     if (!p) {
       setError('Veuillez entrer votre numéro de téléphone')
       return
     }
+    setPhone(p)
     setLoading(true)
     setError('')
     setData(null)
@@ -43,6 +45,14 @@ export default function Fidelity() {
       setLoading(false)
     }
   }
+
+  onMount(() => {
+    const p = searchParams.phone?.toString().trim().replace(/\s/g, '')
+    if (p && p.length >= 10) {
+      setPhone(p)
+      fetchCard({ preventDefault: () => {} }, p)
+    }
+  })
 
   return (
     <div class="fidelity-page">
@@ -118,7 +128,59 @@ export default function Fidelity() {
                   <div class="qr-section">
                     <p class="qr-label">Votre QR code unique</p>
                     <img src={qrDataUrl()} alt="QR code carte client" class="qr-code-large" />
-                    <p class="qr-info">Présentez ce QR code en caisse pour valider vos tampons</p>
+                    <p class="qr-info">Présentez ce QR code en caisse pour valider vos tampons, ou enregistrez-le dans le portefeuille de votre téléphone.</p>
+                    <div class="qr-actions">
+                      <button
+                        type="button"
+                        class="btn btn-outline btn-qr-action"
+                        onClick={() => {
+                          const link = document.createElement('a')
+                          link.href = qrDataUrl()
+                          link.download = `carte-fidelite-lealou-${data().stamps || 0}-tampons.png`
+                          link.click()
+                        }}
+                      >
+                        📥 Télécharger
+                      </button>
+                      <Show when={typeof navigator !== 'undefined' && navigator.share}>
+                        <button
+                          type="button"
+                          class="btn btn-outline btn-qr-action"
+                          onClick={async () => {
+                            try {
+                              const res = await fetch(qrDataUrl())
+                              const blob = await res.blob()
+                              const file = new File([blob], 'carte-fidelite-lealou.png', { type: 'image/png' })
+                              await navigator.share({
+                                title: 'Ma carte fidélité Lealou',
+                                text: `Carte de fidélité Lealou — ${data().stamps || 0} tampons`,
+                                files: [file]
+                              })
+                            } catch (e) {
+                              if (e.name !== 'AbortError') console.error(e)
+                            }
+                          }}
+                        >
+                          📤 Partager
+                        </button>
+                      </Show>
+                      <button
+                        type="button"
+                        class="btn btn-outline btn-qr-action"
+                        onClick={() => {
+                          const num = phone().trim().replace(/\s/g, '')
+                          const url = `${window.location.origin}/fidelite?phone=${encodeURIComponent(num)}`
+                          if (navigator.clipboard?.writeText) {
+                            navigator.clipboard.writeText(url)
+                            alert('Lien copié ! Partagez-le pour accéder à votre carte sur un autre appareil.')
+                          } else {
+                            prompt('Copiez ce lien pour accéder à votre carte :', url)
+                          }
+                        }}
+                      >
+                        🔗 Copier le lien
+                      </button>
+                    </div>
                   </div>
                 </Show>
               </div>
