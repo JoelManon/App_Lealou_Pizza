@@ -9,6 +9,7 @@ import Cart from './pages/Cart'
 import Order from './pages/Order'
 import Contact from './pages/Contact'
 import Fidelity from './pages/Fidelity'
+import { Confidentialite, Cookies, CGV } from './pages/Legal'
 import AdminLogin from './pages/AdminLogin'
 import AdminDashboard from './pages/AdminDashboard'
 import AdminOrders from './pages/AdminOrders'
@@ -46,6 +47,9 @@ function App(appProps) {
       <Route path="/commande" component={Order} />
       <Route path="/contact" component={Contact} />
       <Route path="/fidelite" component={Fidelity} />
+      <Route path="/confidentialite" component={Confidentialite} />
+      <Route path="/cookies" component={Cookies} />
+      <Route path="/cgv" component={CGV} />
       <Route path="/admin/login" component={AdminLogin} />
       <Route path="/admin" component={AdminGuard}>
         <Route path="/" component={AdminDashboard} />

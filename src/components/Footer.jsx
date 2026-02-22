@@ -14,6 +14,11 @@ export default function Footer() {
           <A href="/fidelite">Ma carte</A>
           <A href="/contact">Contact</A>
         </div>
+        <div class="footer-legal">
+          <A href="/confidentialite">Politique de confidentialité</A>
+          <A href="/cookies">Politique de cookies</A>
+          <A href="/cgv">Conditions générales</A>
+        </div>
         <p class="footer-copy">
           © {new Date().getFullYear()} Lealou — Fait avec amour
         </p>
