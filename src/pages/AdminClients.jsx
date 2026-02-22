@@ -1,6 +1,7 @@
 import { createSignal, onMount } from 'solid-js'
 import { A } from '@solidjs/router'
 import { Show } from 'solid-js'
+import QRCode from 'qrcode'
 import './AdminClients.css'
 
 const STAMPS_PER_PIZZA = 10
@@ -12,6 +13,8 @@ export default function AdminClients() {
   const [showForm, setShowForm] = createSignal(false)
   const [editing, setEditing] = createSignal(null)
   const [transferModal, setTransferModal] = createSignal(null)
+  const [qrModal, setQrModal] = createSignal(null)
+  const [qrDataUrl, setQrDataUrl] = createSignal('')
   const [form, setForm] = createSignal({
     first_name: '',
     last_name: '',
@@ -98,6 +101,16 @@ export default function AdminClients() {
     setTransferModal({ client, stampsToAdd: 0 })
   }
 
+  const showQRCode = async (client) => {
+    setQrModal(client)
+    if (client.qr_code) {
+      const url = await QRCode.toDataURL(client.qr_code, { width: 250, margin: 1 })
+      setQrDataUrl(url)
+    } else {
+      setQrDataUrl('')
+    }
+  }
+
   const doTransfer = async () => {
     const m = transferModal()
     if (!m || m.stampsToAdd <= 0) return
@@ -166,12 +179,20 @@ export default function AdminClients() {
                     <strong>{client.first_name} {client.last_name || ''}</strong>
                     <span class="client-phone">{client.phone}</span>
                     {client.address && <span class="client-address">{client.address}</span>}
+                    {client.qr_code && <span class="client-qr-code">{client.qr_code}</span>}
                   </div>
                   <div class="client-fidelity">
                     <span class="stamps-badge">
                       🎫 {client.stamps || 0} / {STAMPS_PER_PIZZA} tampons
                     </span>
                     <div class="fidelity-actions">
+                      <button
+                        class="btn-small btn-qr"
+                        onClick={() => showQRCode(client)}
+                        title="Voir le QR code du client"
+                      >
+                        📱 QR
+                      </button>
                       <button
                         class="btn-small"
                         onClick={() => openTransfer(client)}
@@ -274,6 +295,24 @@ export default function AdminClients() {
               >
                 Transférer
               </button>
+            </div>
+          </div>
+        </div>
+      </Show>
+
+      <Show when={qrModal()}>
+        <div class="modal-overlay" onClick={() => setQrModal(null)}>
+          <div class="modal modal-qr" onClick={e => e.stopPropagation()}>
+            <h3>QR Code Client</h3>
+            <p class="qr-client-name">
+              <strong>{qrModal()?.first_name} {qrModal()?.last_name || ''}</strong>
+            </p>
+            <Show when={qrDataUrl()} fallback={<p class="no-qr">Ce client n'a pas encore de QR code.</p>}>
+              <img src={qrDataUrl()} alt="QR Code" class="qr-image" />
+              <p class="qr-code-text">{qrModal()?.qr_code}</p>
+            </Show>
+            <div class="modal-actions">
+              <button type="button" onClick={() => setQrModal(null)}>Fermer</button>
             </div>
           </div>
         </div>

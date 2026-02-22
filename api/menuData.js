@@ -24,6 +24,12 @@ function slug(name) {
     .replace(/(^-|-$)/g, '')
 }
 
+function imageKey(name) {
+  const hasPlus = name.includes('+')
+  const base = slug(name)
+  return hasPlus ? base + '-plus' : base
+}
+
 const rawItems = [
   { name: 'Marguerite', category: 'base-tomate', price: 8, ingredients: 'Mozzarella' },
   { name: 'Marguerite Napolitaine', category: 'base-tomate', price: 11, ingredients: "Mozzarella, basilic, tomates cerises, huile d'olive" },
@@ -70,17 +76,17 @@ const pizzaImages = {
   'la-bella-napoli': '/pizzas/pizza-la-bella-napoli.png',
   'burger': '/pizzas/pizza-burger.png',
   'bolognaise': '/pizzas/pizza-bolognaise.png',
-  'bolognaise-': '/pizzas/pizza-bolognaise +.png',
+  'bolognaise-plus': '/pizzas/pizza-bolognaise+.png',
   'chorizo': '/pizzas/pizza-chorizo.png',
   '4-saisons': '/pizzas/pizza-4-saisons.png',
-  'orientale': '/pizzas/pizza-chorizo.png',
-  'orientale-': '/pizzas/pizza-chorizo.png',
+  'orientale': '/pizzas/pizza-orientale.png',
+  'orientale-plus': '/pizzas/pizza-orientale+.png',
   'kebab': '/pizzas/pizza-kebab.png',
-  'kebab-': '/pizzas/pizza-kebab +.png',
+  'kebab-plus': '/pizzas/pizza-kebab+.png',
   'la-kevin': '/pizzas/pizza-la-kevin.png',
   'hawai': '/pizzas/pizza-hawai.png',
   'la-colisee': '/pizzas/pizza-la-colisee.png',
-  'vegetarienne-': '/pizzas/pizza-vegetarienne +.png',
+  'vegetarienne-plus': '/pizzas/pizza-vegetarienne+.png',
   'la-savoyarde': '/pizzas/pizza-la-savoyarde.png',
   'poulet-curry': '/pizzas/pizza-poulet-curry.png',
   'chevre-miel': '/pizzas/pizza-chevre-miel.png',
@@ -95,8 +101,8 @@ const pizzaImages = {
 }
 
 export const rawItemsForSeed = rawItems.map((item, i) => {
-  const id = slug(item.name) || 'pizza-' + i
-  return { ...item, image: pizzaImages[id] || '/pizzas/pizza-marguerite.png' }
+  const key = imageKey(item.name)
+  return { ...item, image: pizzaImages[key] || '/pizzas/pizza-marguerite.png' }
 })
 
 export const menuItems = rawItems.map((item, i) => ({
@@ -104,5 +110,5 @@ export const menuItems = rawItems.map((item, i) => ({
   id: slug(item.name) || 'pizza-' + i,
   description: item.ingredients,
   sizes: { default: item.price },
-  image: pizzaImages[slug(item.name)] || '/pizzas/pizza-marguerite.png',
+  image: pizzaImages[imageKey(item.name)] || '/pizzas/pizza-marguerite.png',
 }))

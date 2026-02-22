@@ -7,9 +7,15 @@ export default function Contact() {
         <h1 class="page-title">Contact</h1>
         <div class="contact-card">
           <p><strong>Lea Lou Pizza</strong></p>
-          <p>📞 01 23 45 67 89</p>
-          <p>📍 123 rue de la Pizza, 75001 Paris</p>
-          <p>🕐 Ouvert du mardi au dimanche, 11h-23h</p>
+          <p>📞 07 68 34 17 69</p>
+          <div class="schedule">
+            <p><strong>LUNDI</strong> Corbelin</p>
+            <p><strong>MARDI</strong> Saint Didier d'Aoste</p>
+            <p><strong>MERCREDI</strong> Corbelin</p>
+            <p><strong>VENDREDI</strong> Saint Didier d'Aoste</p>
+            <p><strong>SAMEDI</strong> Corbelin</p>
+            <p><strong>DIMANCHE</strong> La Bâtie Montgascon</p>
+          </div>
         </div>
       </div>
     </div>

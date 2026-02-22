@@ -45,11 +45,13 @@ export function createMenuItem(data) {
   if (!name?.trim() || !category?.trim()) {
     throw new Error('Nom et catégorie obligatoires')
   }
+  const itemSlug = slug(name.trim())
   const stmt = db.prepare(`
-    INSERT INTO menu_items (name, category, price, ingredients, image)
-    VALUES (?, ?, ?, ?, ?)
+    INSERT INTO menu_items (slug, name, category, price, ingredients, image)
+    VALUES (?, ?, ?, ?, ?, ?)
   `)
   const result = stmt.run(
+    itemSlug,
     name.trim(),
     category.trim(),
     Number(price) || 0,
@@ -84,11 +86,12 @@ export function seedMenuFromStatic(staticItems) {
   const count = db.prepare('SELECT COUNT(*) as n FROM menu_items').get()
   if (count.n > 0) return
   const insert = db.prepare(`
-    INSERT INTO menu_items (name, category, price, ingredients, image, sort_order)
-    VALUES (?, ?, ?, ?, ?, ?)
+    INSERT INTO menu_items (slug, name, category, price, ingredients, image, sort_order)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
   `)
   staticItems.forEach((item, i) => {
     insert.run(
+      slug(item.name),
       item.name,
       item.category,
       item.price,

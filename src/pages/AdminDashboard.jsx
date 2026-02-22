@@ -76,10 +76,10 @@ export default function AdminDashboard() {
               <span class="action-icon">👥</span>
               <span>Gestion des clients</span>
             </A>
-            <div class="action-card disabled">
-              <span class="action-icon">📢</span>
-              <span>Annonces</span>
-            </div>
+            <A href="/admin/scanner" class="action-card action-scanner">
+              <span class="action-icon">📱</span>
+              <span>Scanner Fidélité</span>
+            </A>
           </div>
         </section>
       </main>

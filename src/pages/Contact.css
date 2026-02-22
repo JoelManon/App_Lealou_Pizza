@@ -14,3 +14,19 @@
 .contact-card p {
   margin: 0.5rem 0;
 }
+
+.contact-card .schedule {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+.contact-card .schedule p {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.contact-card .schedule strong {
+  min-width: 100px;
+}

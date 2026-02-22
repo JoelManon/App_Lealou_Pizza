@@ -23,7 +23,7 @@ app.get('/health', (req, res) => res.status(200).json({ ok: true, service: 'leal
 // API routes - avant Vite
 const { createOrder, getOrders, updateOrderStatus } = await import('./api/orders.js')
 const { getStamps, redeemPizza, addStamps, transferFromPaper, setStamps, STAMPS_PER_PIZZA } = await import('./api/fidelity.js')
-const { listClients, getClient, createClient, updateClient, deleteClient } = await import('./api/clients.js')
+const { listClients, getClient, getClientByQRCode, createClient, updateClient, deleteClient } = await import('./api/clients.js')
 const { listMenuItems, createMenuItem, updateMenuItem, deleteMenuItem, seedMenuFromStatic } = await import('./api/menu.js')
 const { categories, supplements, menuMeta, rawItemsForSeed } = await import('./api/menuData.js')
 const { 
@@ -181,7 +181,13 @@ app.get('/api/fidelity', (req, res) => {
     const phone = req.query.phone
     if (!phone) return res.status(400).json({ error: 'phone required' })
     const stamps = getStamps(phone)
-    res.json({ stamps, stampsPerPizza: STAMPS_PER_PIZZA })
+    const client = getClient(phone)
+    res.json({ 
+      stamps, 
+      stampsPerPizza: STAMPS_PER_PIZZA,
+      qrCode: client?.qr_code || null,
+      clientName: client ? `${client.first_name} ${client.last_name || ''}`.trim() : null
+    })
   } catch (e) {
     res.status(500).json({ error: e.message })
   }
@@ -231,6 +237,54 @@ app.delete('/api/clients/:phone', (req, res) => {
     res.json({ ok: true })
   } catch (e) {
     res.status(500).json({ error: e.message })
+  }
+})
+
+// Récupérer un client par QR code
+app.get('/api/clients/qr/:qrCode', (req, res) => {
+  try {
+    const client = getClientByQRCode(req.params.qrCode)
+    if (!client) return res.status(404).json({ error: 'Client non trouvé avec ce QR code' })
+    res.json(client)
+  } catch (e) {
+    res.status(500).json({ error: e.message })
+  }
+})
+
+// Ajouter un tampon via QR code (scan)
+app.post('/api/fidelity/stamp', (req, res) => {
+  try {
+    const { qrCode, phone } = req.body
+    let clientPhone = phone
+    
+    if (qrCode && !phone) {
+      // Format 1: LEALOU:phone (QR basé sur téléphone)
+      if (qrCode.startsWith('LEALOU:')) {
+        clientPhone = qrCode.replace('LEALOU:', '').replace(/\s/g, '')
+      }
+      // Format 2: LEALOU-XXXX (QR unique client)
+      else if (qrCode.startsWith('LEALOU-')) {
+        const client = getClientByQRCode(qrCode)
+        if (!client) return res.status(404).json({ error: 'Client non trouvé avec ce QR code' })
+        clientPhone = client.phone
+      }
+      else {
+        return res.status(400).json({ error: 'Format QR code invalide' })
+      }
+    }
+    
+    if (!clientPhone) return res.status(400).json({ error: 'QR code ou téléphone requis' })
+    
+    const newStamps = addStamps(clientPhone, 1)
+    const client = getClient(clientPhone)
+    res.json({ 
+      ok: true, 
+      stamps: newStamps, 
+      stampsPerPizza: STAMPS_PER_PIZZA,
+      client: client ? { first_name: client.first_name, last_name: client.last_name } : null
+    })
+  } catch (e) {
+    res.status(400).json({ error: e.message })
   }
 })
 

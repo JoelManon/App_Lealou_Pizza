@@ -112,3 +112,11 @@
 .action-icon {
   font-size: 2rem;
 }
+
+.action-scanner {
+  background: linear-gradient(135deg, #4a90d9 0%, #357abd 100%);
+  color: white;
+}
+.action-scanner:hover {
+  color: white;
+}

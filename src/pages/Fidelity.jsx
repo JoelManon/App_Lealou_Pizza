@@ -15,7 +15,8 @@ export default function Fidelity() {
     const d = data()
     const p = phone().trim().replace(/\s/g, '')
     if (d && p) {
-      QRCode.toDataURL(`LEALOU:${p}`).then(setQrDataUrl).catch(() => setQrDataUrl(''))
+      const qrContent = d.qrCode || `LEALOU:${p}`
+      QRCode.toDataURL(qrContent, { width: 300, margin: 1 }).then(setQrDataUrl).catch(() => setQrDataUrl(''))
     } else {
       setQrDataUrl('')
     }
@@ -71,36 +72,55 @@ export default function Fidelity() {
           {(() => {
             const d = data()
             const stampsVal = d.stamps
-            const total = d.stampsPerPizza || 10
+            const total = 10
             const currentCard = stampsVal % total
-            const filled = Math.min(currentCard, total)
+            const filled = stampsVal >= total ? total : currentCard
+            const freeEarned = stampsVal >= total
             return (
               <div class="fidelity-card">
                 <div class="card-header">
                   <img src="/logo-lealou.png" alt="Lealou" class="card-logo" />
                   <h2>Carte de fidélité Lealou</h2>
                 </div>
+                <Show when={d.clientName}>
+                  <p class="client-name">Bonjour, <strong>{d.clientName}</strong></p>
+                </Show>
                 <p class="stamps-count">
-                  <strong>{filled}</strong> tampon{filled > 1 ? 's' : ''} sur {total}
+                  <strong>{stampsVal >= total ? total : currentCard}</strong> tampon{(stampsVal >= total ? total : currentCard) > 1 ? 's' : ''} sur {total}
                   {stampsVal >= total && (
-                    <span class="bonus"> (+{Math.floor(stampsVal / total)} pizza(s) offerte(s) à réclamer)</span>
+                    <span class="bonus"> — Pizza gratuite à réclamer !</span>
                   )}
                 </p>
-                <div class="stamps-grid">
+                <div class="stamps-grid-11">
                   {Array.from({ length: total }, (_, i) => (
                     <div
                       classList={{ stamp: true, filled: i < filled }}
                       title={i < filled ? 'Tampon obtenu' : 'À gagner'}
                     >
-                      {i < filled ? '🍕' : ''}
+                      {i < filled ? '🍕' : (i + 1)}
                     </div>
                   ))}
+                  <div
+                    classList={{ stamp: true, 'stamp-gratuit': true, filled: freeEarned }}
+                    title={freeEarned ? 'Pizza gratuite à réclamer !' : '11ème - Gratuit'}
+                  >
+                    {freeEarned ? '🎁' : ''}
+                    <span class="gratuit-label">Gratuit</span>
+                  </div>
                 </div>
                 <p class="card-footer">
-                  {filled >= total
-                    ? "🎉 Vous avez droit à une pizza offerte ! Présentez cette carte en caisse."
+                  {freeEarned
+                    ? "🎉 Félicitations ! Présentez ce QR code en caisse pour obtenir votre pizza gratuite."
                     : `${total - filled} tampon${total - filled > 1 ? 's' : ''} restant${total - filled > 1 ? 's' : ''} pour une pizza offerte.`}
                 </p>
+                
+                <Show when={qrDataUrl()}>
+                  <div class="qr-section">
+                    <p class="qr-label">Votre QR code unique</p>
+                    <img src={qrDataUrl()} alt="QR code carte client" class="qr-code-large" />
+                    <p class="qr-info">Présentez ce QR code en caisse pour valider vos tampons</p>
+                  </div>
+                </Show>
               </div>
             )
           })()}

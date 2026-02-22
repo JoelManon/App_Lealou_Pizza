@@ -14,9 +14,20 @@ db.exec(`
     first_name TEXT NOT NULL,
     last_name TEXT,
     address TEXT,
+    qr_code TEXT UNIQUE,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )
 `)
+
+// Migration: ajouter la colonne qr_code si elle n'existe pas
+try {
+  db.exec(`ALTER TABLE clients ADD COLUMN qr_code TEXT`)
+} catch (_) {}
+
+// Créer un index unique sur qr_code (ignore si existe déjà)
+try {
+  db.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_clients_qr_code ON clients(qr_code)`)
+} catch (_) {}
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS fidelity (
@@ -29,10 +40,11 @@ db.exec(`
 db.exec(`
   CREATE TABLE IF NOT EXISTS menu_items (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    slug TEXT NOT NULL,
     name TEXT NOT NULL,
     category TEXT NOT NULL,
     price REAL NOT NULL,
-    ingredients TEXT NOT NULL,
+    ingredients TEXT,
     image TEXT DEFAULT '/pizzas/pizza-marguerite.png',
     sort_order INTEGER DEFAULT 0,
     available INTEGER DEFAULT 1,

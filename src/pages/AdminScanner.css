@@ -1,0 +1,196 @@
+.admin-scanner .admin-header {
+  background: var(--color-wood);
+  color: var(--color-cream);
+  padding: 1rem 0;
+}
+
+.admin-scanner .admin-header a {
+  color: var(--color-cream-dark);
+}
+.admin-scanner .admin-header a:hover {
+  color: var(--color-gold);
+}
+
+.scanner-main {
+  padding: 2rem 0;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.scanner-instructions {
+  text-align: center;
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+.scanner-area {
+  background: #f5f5f5;
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#qr-reader {
+  width: 100%;
+  max-width: 350px;
+}
+
+#qr-reader video {
+  border-radius: var(--radius-sm);
+}
+
+.btn-start,
+.btn-stop {
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  margin-top: 1rem;
+}
+
+.btn-start {
+  background: var(--color-herb);
+  color: white;
+}
+
+.btn-stop {
+  background: var(--color-ripe);
+  color: white;
+}
+
+.processing {
+  color: #666;
+  font-style: italic;
+}
+
+.scanner-error {
+  background: #ffebee;
+  border: 1px solid #ef5350;
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.scanner-error p {
+  color: #c62828;
+  margin: 0 0 0.75rem;
+}
+
+.scanner-error button {
+  background: var(--color-ripe);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+}
+
+.scanner-result {
+  background: white;
+  border: 2px solid var(--color-herb);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.scanner-result.success {
+  animation: pulse 0.5s ease;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+.result-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.checkmark {
+  width: 40px;
+  height: 40px;
+  background: var(--color-herb);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.result-header h3 {
+  margin: 0;
+  color: var(--color-herb);
+}
+
+.client-name {
+  font-size: 1.1rem;
+  color: var(--color-wood);
+  margin: 0 0 0.5rem;
+}
+
+.stamps-count {
+  font-size: 1.25rem;
+  margin: 0.5rem 0;
+}
+
+.stamps-progress {
+  height: 12px;
+  background: #e0e0e0;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin: 1rem 0;
+}
+
+.stamps-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-herb), var(--color-ripe));
+  border-radius: var(--radius-full);
+  transition: width 0.5s ease;
+}
+
+.free-pizza-alert {
+  background: #fff8e1;
+  border: 2px solid #ffc107;
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.pizza-icon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.free-pizza-alert p {
+  margin: 0 0 1rem;
+  color: #7a6100;
+}
+
+.btn-redeem {
+  background: #ff9800;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+}
+.btn-redeem:hover {
+  background: #f57c00;
+}
+
+.btn-scan-again {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background: var(--color-wood);
+  color: white;
+  border-radius: var(--radius-sm);
+}

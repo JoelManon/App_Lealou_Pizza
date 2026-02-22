@@ -213,3 +213,50 @@
   width: 80px;
   text-align: center;
 }
+
+.client-qr-code {
+  font-size: 0.75rem;
+  color: #999;
+  font-family: monospace;
+}
+
+.btn-qr {
+  background: #4a90d9 !important;
+  color: white !important;
+}
+.btn-qr:hover {
+  background: #3a7bc8 !important;
+}
+
+.modal-qr {
+  text-align: center;
+}
+
+.qr-client-name {
+  margin: 0.5rem 0 1rem;
+  font-size: 1.1rem;
+}
+
+.qr-image {
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 0.75rem;
+  display: block;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
+}
+
+.qr-code-text {
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: #666;
+  background: var(--color-cream);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  display: inline-block;
+}
+
+.no-qr {
+  color: #888;
+  font-style: italic;
+}
