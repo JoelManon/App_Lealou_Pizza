@@ -390,6 +390,9 @@ app.use('*all', async (req, res) => {
 })
 
 // Start http server
-app.listen(port, () => {
-  console.log(`Server started at http://localhost:${port}`)
+const host = '0.0.0.0'
+app.listen(port, host, () => {
+  console.log(`Server started at http://${host}:${port}`)
+  console.log(`Environment: ${isProduction ? 'production' : 'development'}`)
+  console.log(`Health check: http://${host}:${port}/health`)
 })
