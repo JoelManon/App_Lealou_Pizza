@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Domino Trainer — LOGIK</title>
+  <style>
+    :root{--bg:#0b1020;--txt:#e9ecff;--muted:#a7b0d8;--accent:#7aa2ff;--good:#3ddc97;--bad:#ff6b6b;--border:rgba(255,255,255,.08);--shadow:0 10px 30px rgba(0,0,0,.35);--radius:16px;}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:radial-gradient(1200px 800px at 10% 10%,#17235a 0%,var(--bg) 55%) fixed;color:var(--txt)}
+    .wrap{max-width:980px;margin:0 auto;padding:18px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border:1px solid var(--border);border-radius:var(--radius);background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));box-shadow:var(--shadow)}
+    .brand{display:flex;flex-direction:column;gap:4px}
+    .brand h1{margin:0;font-size:18px;letter-spacing:.2px}
+    .brand p{margin:0;font-size:12px;color:var(--muted)}
+    .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+    .pill{display:flex;align-items:center;gap:8px;border:1px solid var(--border);background:rgba(255,255,255,.03);padding:8px 10px;border-radius:999px;font-size:12px;color:var(--muted)}
+    select,button{cursor:pointer}
+    select{background:rgba(255,255,255,.03);color:var(--txt);border:1px solid var(--border);border-radius:999px;padding:8px 10px;font-size:12px;outline:none}
+    button{background:rgba(122,162,255,.14);color:var(--txt);border:1px solid rgba(122,162,255,.35);padding:10px 12px;border-radius:12px;font-weight:600;box-shadow:0 8px 18px rgba(0,0,0,.25)}
+    button:hover{filter:brightness(1.07)}
+    button:active{transform:translateY(1px)}
+    main{display:grid;grid-template-columns:1.15fr .85fr;gap:14px;margin-top:14px}
+    @media (max-width:860px){main{grid-template-columns:1fr}}
+    .card{border:1px solid var(--border);border-radius:var(--radius);background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));box-shadow:var(--shadow);padding:14px}
+    .titleRow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .titleRow h2{margin:0;font-size:14px}
+    .titleRow .sub{font-size:12px;color:var(--muted)}
+    .qText{margin:10px 0 0;color:var(--muted);font-size:13px;line-height:1.35}
+    .dominoArea{margin-top:12px;padding:14px;border:1px dashed rgba(255,255,255,.14);border-radius:14px;background:rgba(0,0,0,.12);display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap;min-height:160px}
+    .grid2x3{display:grid;grid-template-columns:repeat(3,auto);gap:14px;align-items:center;justify-content:center}
+    .slot{display:flex;align-items:center;justify-content:center;width:92px;height:56px}
+    .missing{width:92px;height:56px;border-radius:12px;border:2px dashed rgba(122,162,255,.55);display:flex;align-items:center;justify-content:center;color:rgba(122,162,255,.9);font-weight:700;background:rgba(122,162,255,.07)}
+    .domino{width:92px;height:56px;border-radius:12px;border:1px solid rgba(255,255,255,.22);background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.04));display:grid;grid-template-columns:1fr 1fr;overflow:hidden;position:relative;box-shadow:0 10px 16px rgba(0,0,0,.25)}
+    .domino::after{content:"";position:absolute;top:6px;bottom:6px;left:50%;width:1px;background:rgba(255,255,255,.24)}
+    .half{position:relative;display:flex;align-items:center;justify-content:center}
+    .pip{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.85);box-shadow:0 1px 1px rgba(0,0,0,.25);position:absolute}
+    .p1{left:50%;top:50%;transform:translate(-50%,-50%)}
+    .p2{left:25%;top:25%}.p3{left:75%;top:75%}
+    .p4{left:75%;top:25%}.p5{left:25%;top:75%}
+    .p6{left:25%;top:50%;transform:translateY(-50%)}
+    .p7{left:75%;top:50%;transform:translateY(-50%)}
+    .p8{left:50%;top:25%;transform:translateX(-50%)}
+    .p9{left:50%;top:75%;transform:translateX(-50%)}
+    .choices{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
+    @media (max-width:520px){.choices{grid-template-columns:1fr}}
+    .choiceBtn{display:flex;align-items:center;gap:10px;justify-content:flex-start;width:100%;text-align:left;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:14px;padding:10px 10px;color:var(--txt);transition:.12s ease}
+    .choiceBtn:hover{border-color:rgba(122,162,255,.55);background:rgba(122,162,255,.07)}
+    .choiceBtn.correct{border-color:rgba(61,220,151,.7);background:rgba(61,220,151,.10)}
+    .choiceBtn.wrong{border-color:rgba(255,107,107,.8);background:rgba(255,107,107,.10)}
+    .kbd{font-size:11px;color:var(--muted);border:1px solid var(--border);padding:2px 7px;border-radius:999px;margin-left:auto}
+    .feedback{margin-top:12px;padding:10px 12px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.03);display:none}
+    .feedback.good{display:block;border-color:rgba(61,220,151,.5)}
+    .feedback.bad{display:block;border-color:rgba(255,107,107,.6)}
+    .feedback h3{margin:0 0 6px;font-size:13px}
+    .feedback p{margin:0;color:var(--muted);font-size:13px;line-height:1.35}
+    .statGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
+    .stat{border:1px solid var(--border);background:rgba(0,0,0,.14);border-radius:14px;padding:10px}
+    .stat .k{font-size:11px;color:var(--muted)}
+    .stat .v{font-size:18px;font-weight:800;margin-top:4px}
+    .hr{height:1px;background:rgba(255,255,255,.08);margin:12px 0}
+    .tiny{font-size:12px;color:var(--muted);line-height:1.35}
+    .linklike{color:var(--accent);text-decoration:underline;cursor:pointer}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <h1>Domino Trainer — LOGIK 🁬</h1>
+        <p>Mini app d'entraînement (dominos) : rapidité de lecture + réflexes de pattern.</p>
+      </div>
+      <div class="controls">
+        <div class="pill">
+          <span>Mode</span>
+          <select id="modeSel">
+            <option value="train">Entraînement (explications)</option>
+            <option value="exam">Examen (sans explications)</option>
+          </select>
+        </div>
+        <div class="pill">
+          <span>Difficulté</span>
+          <select id="diffSel">
+            <option value="easy">Facile</option>
+            <option value="mix" selected>Moyen</option>
+            <option value="hard">Difficile</option>
+          </select>
+        </div>
+        <button id="newBtn">Nouvelle question</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="card">
+        <div class="titleRow">
+          <h2 id="qTitle">Question</h2>
+          <div class="sub"><span>Temps :</span> <span id="timer">0.0s</span></div>
+        </div>
+        <p class="qText" id="qText">Complète le domino manquant (4 choix).</p>
+
+        <div class="dominoArea" id="dominoArea"></div>
+        <div class="choices" id="choices"></div>
+
+        <div class="feedback" id="feedback">
+          <h3 id="fbTitle">Feedback</h3>
+          <p id="fbText"></p>
+          <div class="hr"></div>
+          <button id="nextBtn">Suivant</button>
+        </div>
+      </section>
+
+      <aside class="card">
+        <div class="titleRow">
+          <h2>Stats</h2>
+          <div class="sub"><span class="linklike" id="resetStats">réinitialiser</span></div>
+        </div>
+        <div class="statGrid">
+          <div class="stat"><div class="k">Tentatives</div><div class="v" id="stAttempts">0</div></div>
+          <div class="stat"><div class="k">Réussite</div><div class="v" id="stAcc">0%</div></div>
+          <div class="stat"><div class="k">Série</div><div class="v" id="stStreak">0</div></div>
+          <div class="stat"><div class="k">Temps moyen</div><div class="v" id="stAvg">—</div></div>
+        </div>
+        <div class="hr"></div>
+        <div class="tiny">
+          <div><b>Raccourcis</b> : 1/2/3/4 pour choisir • N pour nouvelle question.</div>
+          <div style="margin-top:8px"><b>Tip concours</b> : lis d'abord la fin, puis chasse 5 infos : <span style="color:var(--muted)">Qui / Quoi / Risque / Contrainte / Objectif</span>.</div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+<script>
+  const LS_KEY = "domino_trainer_stats_v1";
+  const clamp = (n,a,b)=>Math.max(a,Math.min(b,n));
+  const randInt = (a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+  const shuffle = (arr)=>arr.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);
+  const deepEq = (p,q)=>p[0]===q[0] && p[1]===q[1];
+  const fmt1 = (n)=> (Math.round(n*10)/10).toFixed(1);
+
+  const pipMap = {
+    0: [],
+    1: ["p1"],
+    2: ["p2","p3"],
+    3: ["p2","p1","p3"],
+    4: ["p2","p4","p5","p3"],
+    5: ["p2","p4","p1","p5","p3"],
+    6: ["p2","p4","p6","p7","p5","p3"]
+  };
+
+  function dominoEl(a,b){
+    const d=document.createElement("div"); d.className="domino";
+    const h1=document.createElement("div"); h1.className="half";
+    const h2=document.createElement("div"); h2.className="half";
+    for(const cls of pipMap[a]){ const p=document.createElement("div"); p.className="pip "+cls; h1.appendChild(p); }
+    for(const cls of pipMap[b]){ const p=document.createElement("div"); p.className="pip "+cls; h2.appendChild(p); }
+    d.appendChild(h1); d.appendChild(h2);
+    return d;
+  }
+  function missingEl(){ const m=document.createElement("div"); m.className="missing"; m.textContent="?"; return m; }
+
+  function buildOptions(answer, avoidList=[]){
+    const opts=[answer];
+    const isBad=(p)=> opts.some(o=>deepEq(o,p)) || avoidList.some(o=>deepEq(o,p));
+    while(opts.length<4){
+      let cand=[randInt(0,6), randInt(0,6)];
+      if(Math.random()<0.6){
+        const side=Math.random()<0.5?0:1;
+        cand=[answer[0],answer[1]];
+        cand[side]=(cand[side]+randInt(1,6))%7;
+      }
+      if(!isBad(cand)) opts.push(cand);
+    }
+    return shuffle(opts);
+  }
+
+  function genChainPuzzle(level){
+    const len=6;
+    const doms=[];
+    let explain="";
+    if(level==="easy"){
+      let xs=Array.from({length: len+1}, _=>randInt(0,6));
+      for(let i=1;i<xs.length;i++){ if(xs[i]===xs[i-1]) xs[i]=(xs[i]+randInt(1,6))%7; }
+      for(let i=0;i<len;i++) doms.push([xs[i], xs[i+1]]);
+      explain="Règle : chaque domino continue la chaîne (la droite mène au suivant).";
+    } else if(level==="mix"){
+      const S=randInt(6,10);
+      let ls=Array.from({length: len}, _=>randInt(0,6));
+      for(let i=1;i<ls.length;i++){ if(ls[i]===ls[i-1]) ls[i]=(ls[i]+randInt(1,6))%7; }
+      for(const l of ls) doms.push([l, clamp(S-l,0,6)]);
+      explain="Règle : motif constant (souvent une somme constante ou un pas régulier). Cherche l'invariant.";
+    } else {
+      let xs=Array.from({length: len}, _=>randInt(0,6));
+      for(let i=1;i<xs.length;i++){ if(xs[i]===xs[i-1]) xs[i]=(xs[i]+randInt(1,6))%7; }
+      const stepA=randInt(1,6), stepB=randInt(1,6);
+      for(let i=0;i<len;i++){
+        const left=xs[i];
+        const step=(i%2===0)?stepA:stepB;
+        doms.push([left, (left+step)%7]);
+      }
+      explain="Règle : pas alterné (mod 7). Observe la progression et la transformation gauche→droite.";
+    }
+
+    const miss=randInt(1,len-2);
+    const answer=doms[miss];
+    const options=buildOptions(answer);
+    return {
+      type:"chain",
+      prompt:"Complète le domino manquant.",
+      render(area){
+        area.innerHTML="";
+        doms.forEach((d,i)=>{ area.appendChild(i===miss?missingEl():dominoEl(d[0],d[1])); });
+      },
+      options, answer, explain
+    };
+  }
+
+  function genGridPuzzle(level){
+    const mod=7;
+    const addD=(a,b)=>[(a[0]+b[0])%mod,(a[1]+b[1])%mod];
+    let explain="Règle : dans chaque ligne, le 3e domino est la somme (mod 7) des deux premiers (moitié gauche et droite séparément).";
+
+    let a1=[randInt(0,6),randInt(0,6)], a2=[randInt(0,6),randInt(0,6)], a3=addD(a1,a2);
+    let b1=[randInt(0,6),randInt(0,6)], b2=[randInt(0,6),randInt(0,6)], b3=addD(b1,b2);
+
+    if(level==="hard"){
+      const kL=randInt(1,6), kR=randInt(1,6);
+      b1=[(a1[0]+kL)%7,(a1[1]+kR)%7];
+      b2=[(a2[0]+kL)%7,(a2[1]+kR)%7];
+      b3=addD(b1,b2);
+      explain="Règle : (1) ligne : 3e = somme (mod 7). (2) colonne : bas = haut + pas constant (mod 7).";
+    } else if(level==="easy"){
+      const safe=()=>[randInt(0,3),randInt(0,3)];
+      a1=safe(); a2=safe(); a3=[a1[0]+a2[0],a1[1]+a2[1]];
+      b1=safe(); b2=safe(); b3=[b1[0]+b2[0],b1[1]+b2[1]];
+      explain="Règle : dans chaque ligne, le 3e domino combine les deux premiers (addition simple).";
+    }
+
+    const grid=[[a1,a2,a3],[b1,b2,b3]];
+    const missR=randInt(0,1), missC=randInt(0,2);
+    const answer=grid[missR][missC];
+    const options=buildOptions(answer, grid.flat());
+
+    return {
+      type:"grid",
+      prompt:"Complète le domino manquant dans la grille 2×3.",
+      render(area){
+        area.innerHTML="";
+        const g=document.createElement("div"); g.className="grid2x3";
+        for(let r=0;r<2;r++){
+          for(let c=0;c<3;c++){
+            const slot=document.createElement("div"); slot.className="slot";
+            slot.appendChild((r===missR && c===missC)?missingEl():dominoEl(grid[r][c][0],grid[r][c][1]));
+            g.appendChild(slot);
+          }
+        }
+        area.appendChild(g);
+      },
+      options, answer, explain
+    };
+  }
+
+  let state={mode:"train", diff:"mix", puzzle:null, startTs:0, timerId:null, locked:false};
+
+  function loadStats(){
+    try{
+      const raw=localStorage.getItem(LS_KEY);
+      if(!raw) return {attempts:0, correct:0, streak:0, totalTime:0};
+      const s=JSON.parse(raw);
+      return {attempts:s.attempts||0, correct:s.correct||0, streak:s.streak||0, totalTime:s.totalTime||0};
+    }catch(e){ return {attempts:0, correct:0, streak:0, totalTime:0}; }
+  }
+  function saveStats(s){ localStorage.setItem(LS_KEY, JSON.stringify(s)); }
+  let stats=loadStats();
+
+  const dominoArea=document.getElementById("dominoArea");
+  const choices=document.getElementById("choices");
+  const qText=document.getElementById("qText");
+  const qTitle=document.getElementById("qTitle");
+  const timerEl=document.getElementById("timer");
+  const feedback=document.getElementById("feedback");
+  const fbTitle=document.getElementById("fbTitle");
+  const fbText=document.getElementById("fbText");
+  const nextBtn=document.getElementById("nextBtn");
+
+  const stAttempts=document.getElementById("stAttempts");
+  const stAcc=document.getElementById("stAcc");
+  const stStreak=document.getElementById("stStreak");
+  const stAvg=document.getElementById("stAvg");
+
+  function renderStats(){
+    stAttempts.textContent=stats.attempts;
+    const acc=stats.attempts?Math.round((stats.correct/stats.attempts)*100):0;
+    stAcc.textContent=acc+"%";
+    stStreak.textContent=stats.streak;
+    stAvg.textContent=stats.correct?(fmt1(stats.totalTime/stats.correct)+"s"):"—";
+  }
+
+  function startTimer(){
+    stopTimer();
+    state.startTs=performance.now();
+    state.timerId=setInterval(()=>{
+      const t=(performance.now()-state.startTs)/1000;
+      timerEl.textContent=fmt1(t)+"s";
+    },80);
+  }
+  function stopTimer(){ if(state.timerId){ clearInterval(state.timerId); state.timerId=null; } }
+
+  function pickPuzzle(){
+    const d=state.diff;
+    if(d==="easy") return (Math.random()<0.25)?genGridPuzzle("easy"):genChainPuzzle("easy");
+    if(d==="hard") return (Math.random()<0.55)?genGridPuzzle("hard"):genChainPuzzle("hard");
+    return (Math.random()<0.4)?genGridPuzzle("mix"):genChainPuzzle("mix");
+  }
+
+  function newQuestion(){
+    state.locked=false;
+    feedback.className="feedback";
+    feedback.style.display="none";
+    choices.innerHTML="";
+    state.puzzle=pickPuzzle();
+    qTitle.textContent = state.puzzle.type==="grid" ? "Dominos — Grille" : "Dominos — Série";
+    qText.textContent = state.puzzle.prompt;
+    state.puzzle.render(dominoArea);
+
+    state.puzzle.options.forEach((opt, idx)=>{
+      const b=document.createElement("button");
+      b.className="choiceBtn";
+      b.type="button";
+      b.appendChild(dominoEl(opt[0], opt[1]));
+      const lab=document.createElement("div");
+      lab.innerHTML=`<div style="font-weight:800;font-size:13px">Option ${String.fromCharCode(65+idx)}</div><div style="color:var(--muted);font-size:12px">(${opt[0]}|${opt[1]})</div>`;
+      b.appendChild(lab);
+      const k=document.createElement("div"); k.className="kbd"; k.textContent=(idx+1);
+      b.appendChild(k);
+      b.addEventListener("click", ()=>selectOption(idx));
+      choices.appendChild(b);
+    });
+
+    startTimer();
+    renderStats();
+  }
+
+  function selectOption(idx){
+    if(state.locked) return;
+    state.locked=true;
+    stopTimer();
+    const elapsed=(performance.now()-state.startTs)/1000;
+    const chosen=state.puzzle.options[idx];
+    const ok=deepEq(chosen, state.puzzle.answer);
+
+    stats.attempts += 1;
+    if(ok){ stats.correct += 1; stats.streak += 1; stats.totalTime += elapsed; }
+    else { stats.streak = 0; }
+    saveStats(stats);
+    renderStats();
+
+    [...choices.querySelectorAll(".choiceBtn")].forEach((btn,i)=>{
+      const opt=state.puzzle.options[i];
+      if(deepEq(opt, state.puzzle.answer)) btn.classList.add("correct");
+      if(i===idx && !ok) btn.classList.add("wrong");
+      btn.disabled=true;
+    });
+
+    feedback.style.display="block";
+    if(ok){
+      feedback.className="feedback good";
+      fbTitle.textContent=`✅ Correct — ${fmt1(elapsed)}s`;
+      fbText.textContent = (state.mode==="train") ? state.puzzle.explain : "Bien joué.";
+    } else {
+      feedback.className="feedback bad";
+      fbTitle.textContent=`❌ Incorrect — ${fmt1(elapsed)}s`;
+      fbText.textContent = (state.mode==="train")
+        ? (state.puzzle.explain + " (Astuce : cherche l'invariant — somme, pas, ou combinaison ligne/colonne.)")
+        : "Question suivante.";
+    }
+  }
+
+  document.getElementById("newBtn").addEventListener("click", newQuestion);
+  nextBtn.addEventListener("click", newQuestion);
+  document.getElementById("modeSel").addEventListener("change", (e)=>{ state.mode=e.target.value; });
+  document.getElementById("diffSel").addEventListener("change", (e)=>{ state.diff=e.target.value; newQuestion(); });
+  document.getElementById("resetStats").addEventListener("click", ()=>{
+    stats={attempts:0, correct:0, streak:0, totalTime:0};
+    saveStats(stats); renderStats();
+  });
+
+  window.addEventListener("keydown", (e)=>{
+    const k=e.key.toLowerCase();
+    if(k==="n") newQuestion();
+    if(["1","2","3","4"].includes(k)) selectOption(parseInt(k,10)-1);
+  });
+
+  renderStats();
+  newQuestion();
+</script>
+</body>
+</html>
