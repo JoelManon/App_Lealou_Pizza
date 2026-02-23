@@ -232,29 +232,6 @@
 .qr-info {
   font-size: 0.9rem;
   color: #666;
-  margin: 0 0 1rem;
+  margin: 0;
   font-weight: 500;
-}
-
-.qr-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.75rem;
-  margin-top: 1rem;
-}
-
-.btn-qr-action {
-  font-size: 0.9rem;
-  padding: 0.5rem 1rem;
-}
-
-.btn-wallet {
-  background: linear-gradient(180deg, #1d1d1d 0%, #000 100%) !important;
-  color: white !important;
-  border-color: #333 !important;
-}
-.btn-wallet:hover {
-  color: white !important;
-  opacity: 0.9;
 }
