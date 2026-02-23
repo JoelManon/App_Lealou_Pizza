@@ -322,60 +322,6 @@ app.post('/api/fidelity/redeem', (req, res) => {
   }
 })
 
-app.post('/api/fidelity/wallet-pass', async (req, res) => {
-  try {
-    const { phone } = req.body
-    if (!phone) return res.status(400).json({ error: 'phone required' })
-    const normalized = phone.replace(/\s/g, '')
-    const stamps = getStamps(phone)
-    const client = getClient(normalized)
-    const qrContent = (client?.qr_code) || `LEALOU:${normalized}`
-    const apiKey = process.env.ADD_PASS_API_KEY
-    if (!apiKey) {
-      return res.status(501).json({
-        fallback: true,
-        qrContent,
-        generatorUrl: 'https://app.addpass.io/generator',
-        message: 'Utilisez le générateur AddPass (lien ouvert) et collez votre code QR.',
-      })
-    }
-    const clientName = client ? `${client.first_name} ${client.last_name || ''}`.trim() : null
-    const payload = {
-      backgroundColor: '#8B4513',
-      foregroundColor: '#FFFFFF',
-      labelColor: '#FFFFFF',
-      primaryText: 'Lealou Pizza',
-      headerLabelRight: 'Carte fidélité',
-      headerTextRight: `${stamps}/10 tampons`,
-      secondaryTextLeft: clientName || phone,
-      barcode: { format: 'qr', message: qrContent },
-      backFields: [
-        { label: 'Contact', value: '07 68 34 17 69' },
-        { label: 'Site', value: 'https://lealoupizza.fr' },
-      ],
-    }
-    const addRes = await fetch('https://app.addpass.io/api/v1/generate', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-        Accept: 'application/pkpass',
-      },
-      body: JSON.stringify(payload),
-    })
-    if (!addRes.ok) {
-      const err = await addRes.text()
-      return res.status(502).json({ error: 'AddPass API error', details: err })
-    }
-    const buffer = Buffer.from(await addRes.arrayBuffer())
-    res.set({ 'Content-Type': 'application/vnd.apple.pkpass', 'Content-Disposition': 'attachment; filename="carte-lealou.pkpass"' })
-    res.send(buffer)
-  } catch (e) {
-    console.error('wallet-pass', e)
-    res.status(500).json({ error: e.message })
-  }
-})
-
 app.patch('/api/orders/:id', (req, res) => {
   try {
     const { status } = req.body
