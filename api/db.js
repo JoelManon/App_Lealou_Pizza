@@ -38,6 +38,7 @@ db.exec(`
   CREATE TABLE IF NOT EXISTS fidelity (
     phone TEXT PRIMARY KEY,
     stamps INTEGER DEFAULT 0,
+    pass_ninja_id TEXT,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )
 `)
@@ -56,6 +57,11 @@ db.exec(`
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )
 `)
+
+// Migration: pass_ninja_id pour carte fidélité Wallet
+try {
+  db.exec(`ALTER TABLE fidelity ADD COLUMN pass_ninja_id TEXT`)
+} catch (_) {}
 
 // Migration: ajouter les colonnes manquantes si la table existe déjà
 try {

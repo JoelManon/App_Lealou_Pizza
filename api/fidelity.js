@@ -21,6 +21,23 @@ export function getStamps(phone) {
   return row?.stamps ?? 0
 }
 
+export function getFidelityRow(phone) {
+  const normalized = phone.replace(/\s/g, '')
+  return db.prepare('SELECT stamps, pass_ninja_id FROM fidelity WHERE phone = ?').get(normalized)
+}
+
+export function setPassNinjaId(phone, passNinjaId) {
+  const normalized = phone.replace(/\s/g, '')
+  const existing = db.prepare('SELECT 1 FROM fidelity WHERE phone = ?').get(normalized)
+  if (existing) {
+    db.prepare('UPDATE fidelity SET pass_ninja_id = ?, updated_at = CURRENT_TIMESTAMP WHERE phone = ?')
+      .run(passNinjaId, normalized)
+  } else {
+    db.prepare('INSERT INTO fidelity (phone, stamps, pass_ninja_id) VALUES (?, 0, ?)').run(normalized, passNinjaId)
+  }
+  return passNinjaId
+}
+
 /** Transfère des tampons d'une carte papier vers la carte digitale (staff) */
 export function transferFromPaper(phone, stampsToAdd) {
   const count = Math.max(0, Math.floor(Number(stampsToAdd) || 0))

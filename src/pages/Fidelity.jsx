@@ -129,6 +129,31 @@ export default function Fidelity() {
                     <p class="qr-label">Votre QR code unique</p>
                     <img src={qrDataUrl()} alt="QR code carte client" class="qr-code-large" />
                     <p class="qr-info">Présentez ce QR code en caisse pour valider vos tampons.</p>
+                    <button
+                      type="button"
+                      class="btn btn-primary btn-wallet"
+                      onClick={async () => {
+                        const num = phone().trim()
+                        if (!num) return
+                        try {
+                          const res = await fetch('/api/fidelity/wallet-pass', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ phone: num })
+                          })
+                          const json = await res.json().catch(() => ({}))
+                          if (json.url) {
+                            window.location.href = json.url
+                          } else {
+                            alert(json.message || json.error || 'Impossible de créer le pass.')
+                          }
+                        } catch (e) {
+                          alert('Erreur de connexion.')
+                        }
+                      }}
+                    >
+                      Ajouter à Apple Wallet
+                    </button>
                   </div>
                 </Show>
               </div>
