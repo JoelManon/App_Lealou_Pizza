@@ -180,6 +180,46 @@ export default function Fidelity() {
                       >
                         🔗 Copier le lien
                       </button>
+                      <button
+                        type="button"
+                        class="btn btn-outline btn-qr-action btn-wallet"
+                        onClick={async () => {
+                          const num = phone().trim()
+                          if (!num) return
+                          try {
+                            const res = await fetch('/api/fidelity/wallet-pass', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ phone: num })
+                            })
+                            const ct = res.headers.get('content-type') || ''
+                            if (res.ok && ct.includes('pkpass')) {
+                              const blob = await res.blob()
+                              const a = document.createElement('a')
+                              a.href = URL.createObjectURL(blob)
+                              a.download = 'carte-fidelite-lealou.pkpass'
+                              a.click()
+                              URL.revokeObjectURL(a.href)
+                              return
+                            }
+                            const json = await res.json().catch(() => ({}))
+                            if (json.fallback && json.qrContent) {
+                              if (navigator.clipboard?.writeText) {
+                                await navigator.clipboard.writeText(json.qrContent)
+                              }
+                              window.open(json.generatorUrl || 'https://app.addpass.io/generator', '_blank')
+                              alert('Votre code QR a été copié. Collez-le dans le champ "Barcode / QR message" sur AddPass, puis générez et ajoutez à Apple Wallet.')
+                            } else {
+                              throw new Error(json.error || 'Erreur')
+                            }
+                          } catch (e) {
+                            alert('Impossible de créer le pass. Essayez le générateur AddPass : app.addpass.io/generator')
+                            window.open('https://app.addpass.io/generator', '_blank')
+                          }
+                        }}
+                      >
+                        Apple Wallet
+                      </button>
                     </div>
                   </div>
                 </Show>

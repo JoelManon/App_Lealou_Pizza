@@ -248,3 +248,13 @@
   font-size: 0.9rem;
   padding: 0.5rem 1rem;
 }
+
+.btn-wallet {
+  background: linear-gradient(180deg, #1d1d1d 0%, #000 100%) !important;
+  color: white !important;
+  border-color: #333 !important;
+}
+.btn-wallet:hover {
+  color: white !important;
+  opacity: 0.9;
+}
