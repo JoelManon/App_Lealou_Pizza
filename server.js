@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import fs from 'node:fs/promises'
 import express from 'express'
 import { generateHydrationScript } from 'solid-js/web'
@@ -22,7 +23,7 @@ app.get('/health', (req, res) => res.status(200).json({ ok: true, service: 'leal
 
 // API routes - avant Vite
 const { createOrder, getOrders, updateOrderStatus } = await import('./api/orders.js')
-const { getStamps, redeemPizza, addStamps, transferFromPaper, setStamps, getFidelityRow, setPassNinjaId, STAMPS_PER_PIZZA } = await import('./api/fidelity.js')
+const { getStamps, redeemPizza, addStamps, transferFromPaper, setStamps, STAMPS_PER_PIZZA } = await import('./api/fidelity.js')
 const { listClients, getClient, getClientByQRCode, createClient, updateClient, deleteClient } = await import('./api/clients.js')
 const { listMenuItems, createMenuItem, updateMenuItem, deleteMenuItem, seedMenuFromStatic } = await import('./api/menu.js')
 const { categories, supplements, menuMeta, rawItemsForSeed } = await import('./api/menuData.js')
@@ -247,7 +248,7 @@ app.get('/api/clients/qr/:qrCode', (req, res) => {
     if (!client) return res.status(404).json({ error: 'Client non trouvé avec ce QR code' })
     res.json(client)
   } catch (e) {
-    res.status(500).json({ error: e.message })
+    res.status(400).json({ error: e.message })
   }
 })
 
@@ -284,7 +285,7 @@ app.post('/api/fidelity/stamp', (req, res) => {
       client: client ? { first_name: client.first_name, last_name: client.last_name } : null
     })
   } catch (e) {
-    res.status(400).json({ error: e.message })
+    res.status(500).json({ error: e.message })
   }
 })
 
@@ -324,13 +325,11 @@ app.post('/api/fidelity/redeem', (req, res) => {
 
 app.post('/api/fidelity/wallet-pass', async (req, res) => {
   try {
-    const apiKey = process.env.PASS_NINJA_API_KEY
-    const accountId = process.env.PASS_NINJA_ACCOUNT_ID
-    const passType = process.env.PASS_NINJA_PASS_TYPE
-    if (!apiKey || !accountId || !passType) {
+    const apiKey = process.env.WALLETWALLET_API_KEY
+    if (!apiKey) {
       return res.status(503).json({
-        error: 'PassNinja non configuré',
-        message: 'Configurez PASS_NINJA_API_KEY, PASS_NINJA_ACCOUNT_ID et PASS_NINJA_PASS_TYPE dans les variables d\'environnement.',
+        error: 'WalletWallet non configuré',
+        message: 'Configurez WALLETWALLET_API_KEY dans les variables d\'environnement.',
       })
     }
     const { phone } = req.body
@@ -339,66 +338,36 @@ app.post('/api/fidelity/wallet-pass', async (req, res) => {
     const stamps = getStamps(phone)
     const client = getClient(normalized)
     const qrContent = (client?.qr_code) || `LEALOU:${normalized}`
-    const clientName = client ? `${client.first_name} ${client.last_name || ''}`.trim() : phone
 
-    const fidRow = getFidelityRow(phone)
-    if (fidRow?.pass_ninja_id) {
-      const patchRes = await fetch(
-        `https://api.passninja.com/v1/passes/${encodeURIComponent(passType)}/${encodeURIComponent(fidRow.pass_ninja_id)}`,
-        {
-          method: 'PATCH',
-          headers: {
-            'X-API-KEY': apiKey,
-            'X-ACCOUNT-ID': accountId,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            pass: {
-              'primary.value': `${stamps}/10`,
-              'secondary.0.value': clientName || normalized,
-            },
-          }),
-        }
-      )
-      if (patchRes.ok) {
-        const passData = await patchRes.json()
-        return res.json({ url: passData.urls?.landing, passId: fidRow.pass_ninja_id })
-      }
-    }
-
-    const payload = {
-      passType,
-      pass: {
-        'primary.label': 'Tampons',
-        'primary.value': `${stamps}/10`,
-        'secondary.0.label': 'Client',
-        'secondary.0.value': clientName || normalized,
-        'barcode.data': qrContent,
-        'barcode.type': 'PKBarcodeFormatQR',
-        'barcode.alt': qrContent,
-        'background.color': '#8B4513',
-        'foreground.color': '#FFFFFF',
-        'label.color': '#FFFFFF',
-      },
-    }
-    const createRes = await fetch('https://api.passninja.com/v1/passes', {
+    const wwRes = await fetch('https://api.walletwallet.dev/api/pkpass', {
       method: 'POST',
       headers: {
-        'X-API-KEY': apiKey,
-        'X-ACCOUNT-ID': accountId,
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        barcodeValue: qrContent,
+        barcodeFormat: 'QR',
+        title: 'Carte fidélité Lealou',
+        label: 'Tampons',
+        value: `${stamps >= 10 ? 10 : stamps % 10}/10`,
+        colorPreset: 'orange',
+      }),
     })
-    if (!createRes.ok) {
-      const errText = await createRes.text()
-      console.error('PassNinja create error', createRes.status, errText)
-      return res.status(502).json({ error: 'Erreur PassNinja', details: errText })
+
+    if (!wwRes.ok) {
+      const errBody = await wwRes.json().catch(() => ({ error: wwRes.statusText }))
+      console.error('WalletWallet error', wwRes.status, errBody)
+      return res.status(wwRes.status >= 500 ? 502 : wwRes.status).json({
+        error: errBody.error || 'Erreur WalletWallet',
+        message: errBody.message,
+      })
     }
-    const created = await createRes.json()
-    const passId = created.id || created.serialNumber
-    if (passId) setPassNinjaId(phone, passId)
-    res.json({ url: created.urls?.landing, passId })
+
+    const buffer = Buffer.from(await wwRes.arrayBuffer())
+    res.setHeader('Content-Type', 'application/vnd.apple.pkpass')
+    res.setHeader('Content-Disposition', 'attachment; filename="lealou-fidelite.pkpass"')
+    res.send(buffer)
   } catch (e) {
     console.error('wallet-pass', e)
     res.status(500).json({ error: e.message })

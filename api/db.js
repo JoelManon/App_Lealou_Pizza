@@ -24,12 +24,10 @@ db.exec(`
   )
 `)
 
-// Migration: ajouter la colonne qr_code si elle n'existe pas
 try {
   db.exec(`ALTER TABLE clients ADD COLUMN qr_code TEXT`)
 } catch (_) {}
 
-// Créer un index unique sur qr_code (ignore si existe déjà)
 try {
   db.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_clients_qr_code ON clients(qr_code)`)
 } catch (_) {}
@@ -38,7 +36,6 @@ db.exec(`
   CREATE TABLE IF NOT EXISTS fidelity (
     phone TEXT PRIMARY KEY,
     stamps INTEGER DEFAULT 0,
-    pass_ninja_id TEXT,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )
 `)
@@ -58,12 +55,6 @@ db.exec(`
   )
 `)
 
-// Migration: pass_ninja_id pour carte fidélité Wallet
-try {
-  db.exec(`ALTER TABLE fidelity ADD COLUMN pass_ninja_id TEXT`)
-} catch (_) {}
-
-// Migration: ajouter les colonnes manquantes si la table existe déjà
 try {
   db.exec(`ALTER TABLE menu_items ADD COLUMN sort_order INTEGER DEFAULT 0`)
 } catch (_) {}

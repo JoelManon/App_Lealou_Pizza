@@ -141,14 +141,19 @@ export default function Fidelity() {
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ phone: num })
                           })
-                          const json = await res.json().catch(() => ({}))
-                          if (json.url) {
-                            window.location.href = json.url
-                          } else {
-                            alert(json.message || json.error || 'Impossible de créer le pass.')
+                          if (!res.ok) {
+                            const json = await res.json().catch(() => ({}))
+                            throw new Error(json.message || json.error || 'Impossible de créer le pass.')
                           }
+                          const blob = await res.blob()
+                          const url = URL.createObjectURL(blob)
+                          const a = document.createElement('a')
+                          a.href = url
+                          a.download = 'lealou-fidelite.pkpass'
+                          a.click()
+                          URL.revokeObjectURL(url)
                         } catch (e) {
-                          alert('Erreur de connexion.')
+                          alert(e.message || 'Erreur de connexion.')
                         }
                       }}
                     >
