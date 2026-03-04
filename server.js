@@ -23,7 +23,7 @@ app.get('/health', (req, res) => res.status(200).json({ ok: true, service: 'leal
 
 // API routes - avant Vite
 const { createOrder, getOrders, updateOrderStatus } = await import('./api/orders.js')
-const { getStamps, redeemPizza, addStamps, transferFromPaper, setStamps, STAMPS_PER_PIZZA } = await import('./api/fidelity.js')
+const { getStamps, redeemPizza, addStamps, transferFromPaper, setStamps, getFidelityRow, setGoogleObjectId, STAMPS_PER_PIZZA } = await import('./api/fidelity.js')
 const { listClients, getClient, getClientByQRCode, createClient, updateClient, deleteClient } = await import('./api/clients.js')
 const { listMenuItems, createMenuItem, updateMenuItem, deleteMenuItem, seedMenuFromStatic } = await import('./api/menu.js')
 const { categories, supplements, menuMeta, rawItemsForSeed } = await import('./api/menuData.js')
@@ -278,6 +278,7 @@ app.post('/api/fidelity/stamp', (req, res) => {
     
     const newStamps = addStamps(clientPhone, 1)
     const client = getClient(clientPhone)
+    pushGoogleWalletUpdate(clientPhone).catch(() => {})
     res.json({ 
       ok: true, 
       stamps: newStamps, 
@@ -293,7 +294,9 @@ app.post('/api/fidelity/transfer', (req, res) => {
   try {
     const { phone, stamps } = req.body
     if (!phone) return res.status(400).json({ error: 'phone required' })
-    const newTotal = transferFromPaper(phone, stamps || 0)
+    const normalized = phone.replace(/\s/g, '')
+    const newTotal = transferFromPaper(normalized, stamps || 0)
+    pushGoogleWalletUpdate(normalized).catch(() => {})
     res.json({ ok: true, stamps: newTotal })
   } catch (e) {
     res.status(400).json({ error: e.message })
@@ -305,7 +308,9 @@ app.patch('/api/fidelity/:phone', (req, res) => {
     const { stamps } = req.body
     const phone = req.params.phone
     if (!phone) return res.status(400).json({ error: 'phone required' })
-    const newTotal = setStamps(phone, stamps)
+    const normalized = phone.replace(/\s/g, '')
+    const newTotal = setStamps(normalized, stamps)
+    pushGoogleWalletUpdate(normalized).catch(() => {})
     res.json({ ok: true, stamps: newTotal })
   } catch (e) {
     res.status(400).json({ error: e.message })
@@ -316,9 +321,60 @@ app.post('/api/fidelity/redeem', (req, res) => {
   try {
     const { phone } = req.body
     if (!phone) return res.status(400).json({ error: 'phone required' })
-    const result = redeemPizza(phone)
+    const normalized = phone.replace(/\s/g, '')
+    const result = redeemPizza(normalized)
+    pushGoogleWalletUpdate(normalized).catch(() => {})
     res.json(result)
   } catch (e) {
+    res.status(500).json({ error: e.message })
+  }
+})
+
+// Google Wallet — carte fidélité
+async function pushGoogleWalletUpdate(phone) {
+  try {
+    const { pushWalletUpdate } = await import('./api/wallet/index.js')
+    const stamps = getStamps(phone)
+    const client = getClient(phone.replace(/\s/g, ''))
+    await pushWalletUpdate({
+      phone,
+      stamps,
+      qrToken: client?.qr_code || `LEALOU:${phone.replace(/\s/g, '')}`,
+      clientName: client ? `${client.first_name} ${client.last_name || ''}`.trim() : null,
+      getGoogleObjectId: (p) => getFidelityRow(p)?.google_object_id,
+    })
+  } catch (_) {}
+}
+
+app.post('/api/fidelity/google-wallet-pass', async (req, res) => {
+  try {
+    const issuerId = process.env.GOOGLE_ISSUER_ID
+    if (!issuerId) {
+      return res.status(503).json({
+        error: 'Google Wallet non configuré',
+        message: 'Configurez GOOGLE_ISSUER_ID et GOOGLE_APPLICATION_CREDENTIALS (ou GOOGLE_SERVICE_ACCOUNT_JSON).',
+      })
+    }
+    const { phone } = req.body
+    if (!phone) return res.status(400).json({ error: 'phone required' })
+    const normalized = phone.replace(/\s/g, '')
+    const stamps = getStamps(phone)
+    const client = getClient(normalized)
+    const qrToken = client?.qr_code || `LEALOU:${normalized}`
+    const clientName = client ? `${client.first_name} ${client.last_name || ''}`.trim() : null
+
+    const { createOrGetGoogleWalletCard } = await import('./api/wallet/index.js')
+    const { addToWalletUrl } = await createOrGetGoogleWalletCard({
+      phone: normalized,
+      stamps,
+      qrToken,
+      clientName,
+      getGoogleObjectId: (p) => getFidelityRow(p)?.google_object_id,
+      setGoogleObjectId,
+    })
+    res.json({ addToWalletUrl })
+  } catch (e) {
+    console.error('google-wallet-pass', e)
     res.status(500).json({ error: e.message })
   }
 })

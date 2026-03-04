@@ -236,10 +236,24 @@
   font-weight: 500;
 }
 
+.wallet-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
 .btn-wallet {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  margin-top: 0.5rem;
+}
+
+.btn-google-wallet {
+  background: #1a73e8;
+}
+
+.btn-google-wallet:hover {
+  background: #1557b0;
 }

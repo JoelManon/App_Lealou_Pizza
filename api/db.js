@@ -36,9 +36,14 @@ db.exec(`
   CREATE TABLE IF NOT EXISTS fidelity (
     phone TEXT PRIMARY KEY,
     stamps INTEGER DEFAULT 0,
+    google_object_id TEXT,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )
 `)
+
+try {
+  db.exec(`ALTER TABLE fidelity ADD COLUMN google_object_id TEXT`)
+} catch (_) {}
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS menu_items (

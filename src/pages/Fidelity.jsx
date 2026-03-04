@@ -129,36 +129,64 @@ export default function Fidelity() {
                     <p class="qr-label">Votre QR code unique</p>
                     <img src={qrDataUrl()} alt="QR code carte client" class="qr-code-large" />
                     <p class="qr-info">Présentez ce QR code en caisse pour valider vos tampons.</p>
-                    <button
-                      type="button"
-                      class="btn btn-primary btn-wallet"
-                      onClick={async () => {
-                        const num = phone().trim()
-                        if (!num) return
-                        try {
-                          const res = await fetch('/api/fidelity/wallet-pass', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ phone: num })
-                          })
-                          if (!res.ok) {
-                            const json = await res.json().catch(() => ({}))
-                            throw new Error(json.message || json.error || 'Impossible de créer le pass.')
+                    <div class="wallet-buttons">
+                      <button
+                        type="button"
+                        class="btn btn-primary btn-wallet"
+                        onClick={async () => {
+                          const num = phone().trim()
+                          if (!num) return
+                          try {
+                            const res = await fetch('/api/fidelity/wallet-pass', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ phone: num })
+                            })
+                            if (!res.ok) {
+                              const json = await res.json().catch(() => ({}))
+                              throw new Error(json.message || json.error || 'Impossible de créer le pass.')
+                            }
+                            const blob = await res.blob()
+                            const url = URL.createObjectURL(blob)
+                            const a = document.createElement('a')
+                            a.href = url
+                            a.download = 'lealou-fidelite.pkpass'
+                            a.click()
+                            URL.revokeObjectURL(url)
+                          } catch (e) {
+                            alert(e.message || 'Erreur de connexion.')
                           }
-                          const blob = await res.blob()
-                          const url = URL.createObjectURL(blob)
-                          const a = document.createElement('a')
-                          a.href = url
-                          a.download = 'lealou-fidelite.pkpass'
-                          a.click()
-                          URL.revokeObjectURL(url)
-                        } catch (e) {
-                          alert(e.message || 'Erreur de connexion.')
-                        }
-                      }}
-                    >
-                      Ajouter à Apple Wallet
-                    </button>
+                        }}
+                      >
+                        Ajouter à Apple Wallet
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-primary btn-wallet btn-google-wallet"
+                        onClick={async () => {
+                          const num = phone().trim()
+                          if (!num) return
+                          try {
+                            const res = await fetch('/api/fidelity/google-wallet-pass', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ phone: num })
+                            })
+                            const json = await res.json().catch(() => ({}))
+                            if (!res.ok) throw new Error(json.message || json.error || 'Impossible de créer la carte.')
+                            if (json.addToWalletUrl) {
+                              window.location.href = json.addToWalletUrl
+                            } else {
+                              throw new Error('Lien Google Wallet non reçu.')
+                            }
+                          } catch (e) {
+                            alert(e.message || 'Erreur de connexion.')
+                          }
+                        }}
+                      >
+                        Ajouter à Google Wallet
+                      </button>
+                    </div>
                   </div>
                 </Show>
               </div>
