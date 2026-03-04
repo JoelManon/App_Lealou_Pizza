@@ -1,2 +1,2 @@
-// Mot de passe staff — modifiez-le pour votre usage
-export const STAFF_PASSWORD = 'lealou'
+// Mot de passe staff — définir via VITE_STAFF_PASSWORD dans .env
+export const STAFF_PASSWORD = import.meta.env.VITE_STAFF_PASSWORD || ''

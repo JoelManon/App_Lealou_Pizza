@@ -23,6 +23,11 @@ dist-ssr
 *.sln
 *.sw?
 
+# Environment (secrets, credentials)
+.env
+.env.local
+.env.*.local
+
 # SQLite
 data/*.db
 
